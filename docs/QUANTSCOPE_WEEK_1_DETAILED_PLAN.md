@@ -1,4 +1,4 @@
-﻿# QuantScope â€” Week 1 Detailed Plan
+# QuantScope â€” Week 1 Detailed Plan
 
 > Source roadmap: [QUANTSCOPE_8_WEEK_PLAN.md](QUANTSCOPE_8_WEEK_PLAN.md)  
 > Week 1 theme: **Quant foundations + project setup**  
@@ -284,7 +284,7 @@ KhÃ´ng bao giá» commit `.env` tháº­t.
 - [x] `.gitignore`
 - [x] `.env.example`
 - [x] Folder skeleton
-- [ ] README ngáº¯n trong cÃ¡c folder chÃ­nh
+- [x] README ngắn trong các folder chính
 
 ## TiÃªu chÃ­ hoÃ n thÃ nh Day 1
 
