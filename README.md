@@ -1,4 +1,4 @@
-﻿# QuantScope
+# QuantScope
 
 QuantScope là một nền tảng nghiên cứu giao dịch định lượng dùng Python và Machine Learning.
 

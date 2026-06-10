@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 .venv/
@@ -30,3 +30,7 @@ build/
 .claude/
 
 
+
+# Local planning docs
+docs/QUANTSCOPE_8_WEEK_PLAN.md
+docs/QUANTSCOPE_WEEK_1_DETAILED_PLAN.md
