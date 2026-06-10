@@ -27,8 +27,6 @@ build/
 .DS_Store
 .vscode/
 
-# DOCS
-docs/QUANTSCOPE_WEEK_1_DETAILED_PLAN.md
-docs/QUANTSCOPE_8_WEEK_PLAN.md
 .claude/
+
 
