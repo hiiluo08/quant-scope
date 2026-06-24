@@ -28,3 +28,18 @@ Nó được thiết kế để đi từ dữ liệu thị trường đến fact
 ## Tài liệu chính
 
 - [Project scope](docs/project_scope.md)
+
+## Local Setup
+
+```bash
+python -m venv .venv
+# On Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# On macOS/Linux:
+source .venv/bin/activate
+
+pip install -r requirements.txt
+python -m ipykernel install --user --name alphaforge
+jupyter notebook
+```
+
