@@ -199,3 +199,118 @@ Missing data can distort return calculations, break rolling statistics, and crea
 If you want a short summary for yourself, you can use this:
 
 > OHLCV is the basic structure of market data. For long-term research, adjusted close is often the safest price series for return calculations. Before doing any quant analysis, I need to inspect the data, sort it correctly, check missing values, and understand what each column actually means.
+
+---
+
+## 11. Factor, Alpha, Signal, and Position
+
+### Factor
+A factor is a quantitative variable calculated from market data (or alternative data) used to explain or predict returns and risks.
+- **Example**: `momentum_20d = close_today / close_20_days_ago - 1` (If `momentum_20d` is high, we assume the asset is trending upwards).
+
+### Alpha
+Alpha is the excess return of an investment relative to the return of a benchmark index or adjusted for risk.
+In this project, alpha simply means a signal that helps the strategy outperform the benchmark.
+
+### Signal
+A signal converts factor values into trading intent.
+- **Example**:
+  ```python
+  if momentum_20d > 0:
+      signal = 1  # Long
+  else:
+      signal = 0  # No position
+  ```
+
+### Position
+Position is the actual trading state implemented after receiving the signal.
+- **Crucial Rule**:
+  `factor_t -> signal_t -> position_{t+1}`
+  You must shift the position to the next trading period to avoid **look-ahead bias** (using information from the future that wouldn't be available at the time of the trade decision).
+
+### Label
+A label is the target variable that a Machine Learning model tries to predict.
+- **Example**: `forward_return_5d = close_{t+5} / close_t - 1`
+  The model learns mapping: `features_t -> predict forward_return_5d`.
+
+---
+
+## 12. Factor Taxonomy
+
+| Factor Type | Example | Input | Purpose |
+|---|---|---|---|
+| Momentum | 20d return | Close / Adjusted Close | Capture price trends |
+| Volatility | Rolling standard deviation | Returns | Measure risk / uncertainty |
+| Mean Reversion | RSI (Relative Strength Index) | Close | Find overbought / oversold states |
+| Volume | Volume Z-Score | Volume | Measure attention / liquidity |
+| Trend | SMA Ratio (e.g., SMA_50 / SMA_200) | Close | Measure short-term vs long-term trend |
+
+---
+
+## 13. Factor -> Signal -> Position Workflow Example
+
+Here is a step-by-step example:
+
+**Day t:**
+- `close` = 105
+- `close` 20 days ago = 100
+- `momentum_20d` = `105 / 100 - 1` = 5%
+- `signal_t` = 1 (since `momentum_20d` > 0)
+
+**Day t+1:**
+- Apply `position` = 1 (active trade starts)
+- Compute PnL using the return of day `t+1` (`return_{t+1}`)
+
+---
+
+## 14. Workflow Diagrams
+
+### Standard Quant Workflow
+```text
+Market Data
+    |
+    v
+Factor
+    |
+    v
+Signal
+    |
+    v
+Position
+    |
+    v
+PnL / Backtest Metrics
+```
+
+### ML-Based Alpha Flow
+```text
+Market Data
+    |
+    v
+Factors / Features at day t
+    |
+    v
+ML Model
+    |
+    v
+Predict Future Return (Label)
+    |
+    v
+Ranking / Trading Signal
+```
+
+---
+
+## 15. Day 3 Reflection Questions & Answers
+
+### Q1. How does a factor differ from a signal?
+A **factor** is a continuous numerical value calculated from historical data (e.g., standard deviation, momentum percentage). A **signal** is a discrete decision or action generated based on that factor (e.g., Buy, Sell, Hold, or 1, -1, 0) to express trading intent.
+
+### Q2. How does a signal differ from a position?
+A **signal** is the *intent* to trade generated at time `t` (e.g., buy tomorrow). A **position** is the *actual execution/holding state* active in the market at time `t+1` as a result of that signal.
+
+### Q3. What is a label in ML finance?
+A **label** is the target outcome (ground truth) that the ML model attempts to predict. In quantitative finance, this is typically a future forward return over a specific horizon (e.g., `forward_return_5d`).
+
+### Q4. Why must we not use a factor at day `t` to trade at day `t` if the factor is calculated using the close price of day `t`?
+If a factor uses the closing price of day `t`, that closing price is only known at the very end of day `t`. If you trade during day `t` using that factor, you are using future information that you did not actually have at the time of trading. This introduces **look-ahead bias**, making your backtest results artificially profitable and impossible to replicate in live trading.
