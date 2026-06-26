@@ -27,11 +27,17 @@ QuantScope stores market data in three layers:
 |---|---|---|---|
 | date | date | 2025-01-02 | Trading date |
 | symbol | string | SPY | Uppercase ticker |
+| open | float | 584.23 | Raw open price |
+| high | float | 586.10 | Raw high price |
+| low | float | 580.50 | Raw low price |
+| close | float | 582.90 | Raw close price |
 | adjusted_close | float | 582.90 | Main price for returns |
 | volume | integer | 52300000 | Daily volume |
 | return_1d | float | 0.0123 | Simple daily return |
 | log_return_1d | float | 0.0122 | Log daily return |
 | is_valid | boolean | true | Data quality flag |
+| source | string | yfinance | Data provider |
+| processed_at | datetime | 2026-06-10T10:30:00Z | UTC processing time |
 
 ## Factor schema draft
 

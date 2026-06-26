@@ -1,4 +1,4 @@
-﻿# Infra
+# Infra
 
 Tài liệu và cấu hình cho phần triển khai AWS, Docker và vận hành môi trường.
 
@@ -6,3 +6,7 @@ Tài liệu và cấu hình cho phần triển khai AWS, Docker và vận hành 
 - IAM và cost guardrails
 - Docker / compose config
 - EC2 và Lambda setup notes
+
+> [!NOTE]
+> Docker will be added when the FastAPI backend is ready.
+

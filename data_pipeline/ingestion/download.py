@@ -27,7 +27,7 @@ def download_ticker(symbol: str, start_date: str, end_date: str, source: str = '
     df = df.rename(columns={"adj_close": "adjusted_close"})
     df["symbol"] = symbol.upper()
     df["source"] = source
-    df["date"] = pd.to_datetime(df["date"]).dt.date
+    df["date"] = pd.to_datetime(df["date"]).dt.tz_localize(None)
     df["ingested_at"] = datetime.now(timezone.utc).isoformat()
     return df[["date", "symbol", "open", "high", "low", "close", "adjusted_close", "volume", "source", "ingested_at"]]
 
