@@ -28,3 +28,13 @@ Week 2 will focus on data pipeline implementation:
 - Local storage layout
 - S3 upload/download utility
 - FastAPI market data endpoints
+
+## Suggested GitHub milestone summary
+
+Week 1 completed the foundation for QuantScope:
+
+- Defined the project scope and MVP boundaries.
+- Created a clean repository structure for backend, frontend, ML, data pipeline, infra, docs, and notebooks.
+- Studied market data basics: OHLCV, adjusted close, simple return, log return.
+- Created the first research notebook using sample market data.
+- Drafted the initial data schema for raw, processed, factor, and label data.
