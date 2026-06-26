@@ -43,3 +43,14 @@ python -m ipykernel install --user --name alphaforge
 jupyter notebook
 ```
 
+## Progress
+
+### Week 1 — Quant foundations + repo setup
+
+Status: Completed / In progress
+
+Deliverables:
+- Project scope
+- Market data basics notebook
+- Quant notes
+- Data schema draft
