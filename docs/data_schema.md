@@ -68,7 +68,7 @@ data/
 │   └── source=yfinance/
 │       └── prices_YYYYMMDD.parquet
 ├── processed/
-│   └── ohlcv_daily.parquet
+│   └── ohlcv_YYYYMMDD_YYYYMMDD.parquet
 ├── factors/
 │   └── factor_name=momentum_20d/
 │       └── values.parquet
