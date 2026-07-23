@@ -1,33 +1,33 @@
 # QuantScope
 
-QuantScope là một nền tảng nghiên cứu giao dịch định lượng dùng Python và Machine Learning.
+QuantScope is a quantitative trading research platform built with Python and machine learning.
 
-Nó được thiết kế để đi từ dữ liệu thị trường đến factor, chiến lược, backtest và phân tích hiệu suất.
+It is designed to progress from market data to factors, strategies, backtesting, and performance analysis.
 
-## Repo này có gì
+## What This Repository Contains
 
-- Thu thập và xử lý dữ liệu thị trường
-- Tạo factor và label
-- Xây dựng strategy và backtest
-- Huấn luyện model dự đoán return tương lai
-- Hiển thị kết quả qua dashboard và AWS deployment
+- Market data ingestion and processing
+- Factor and label creation
+- Strategy development and backtesting
+- Future-return prediction model training
+- Result visualization through a dashboard and AWS deployment
 
-## Cấu trúc thư mục
+## Repository Structure
 
-- `backend/` - FastAPI backend và API
-- `frontend/` - Dashboard React
-- `ml/` - Factor, label, backtest, training code
-- `data_pipeline/` - Ingestion, normalization, S3 sync
-- `infra/` - AWS deployment notes và config
-- `scripts/` - Script hỗ trợ local dev và maintenance
-- `notebooks/` - Notebook nghiên cứu và học tập
-- `tests/` - Test cho pipeline và logic chính
-- `data/` - Dữ liệu local, raw/processed
-- `docs/` - Scope, kế hoạch, schema và review
+- `backend/` - FastAPI backend and API routes
+- `frontend/` - React dashboard
+- `ml/` - Factor, label, backtesting, and model training code
+- `data_pipeline/` - Data ingestion, normalization, and S3 synchronization
+- `infra/` - AWS deployment notes and configuration
+- `scripts/` - Local development and maintenance helper scripts
+- `notebooks/` - Research and learning notebooks
+- `tests/` - Tests for the pipeline and core logic
+- `data/` - Local raw and processed data
+- `docs/` - Scope, plans, schemas, and reviews
 
-## Tài liệu chính
+## Main Documentation
 
-- [Project scope](docs/project_scope.md)
+- [Project Scope](docs/project_scope.md)
 
 ## Local Setup
 
@@ -45,11 +45,12 @@ jupyter notebook
 
 ## Progress
 
-### Week 1 — Quant foundations + repo setup
+### Week 1 — Quant Foundations and Repository Setup
 
 Status: Completed / In progress
 
 Deliverables:
+
 - Project scope
 - Market data basics notebook
 - Quant notes
@@ -57,14 +58,15 @@ Deliverables:
 
 ### Week 2 — Data Pipeline
 
-Status: Core functionality complete; the data universe still needs expansion.
+Status: Core functionality is complete; the data universe still needs expansion.
 
 Deliverables:
+
 - Downloader: `data_pipeline/ingestion/download.py`
 - OHLCV normalization and Parquet I/O: `data_pipeline/processing/normalize.py`
-- S3 sync utility: `data_pipeline/storage/s3_client.py`
+- S3 synchronization utility: `data_pipeline/storage/s3_client.py`
 - Market data API: `backend/app/api/routes_market_data.py`
-- [Data quality report](docs/data_quality_week2.md)
-- [Week 2 review](docs/week2_review.md)
+- [Data Quality Report](docs/data_quality_week2.md)
+- [Week 2 Review](docs/week2_review.md)
 
-Note: The current processed snapshot contains 2 tickers (`AAPL`, `SPY`); the Day 14 criterion of at least 5 tickers remains open.
+Note: The current processed snapshot contains two tickers (`AAPL` and `SPY`); the Day 14 requirement of at least five tickers remains open.
