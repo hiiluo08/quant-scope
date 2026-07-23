@@ -32,4 +32,12 @@ def s3_raw_key(source: str, start: str, end: str) -> str:
 
 def s3_processed_key(start: str, end: str) -> str:
     return f"processed/ohlcv_{start}_{end}.parquet"
+
+def universe_processed_path(start: str, end: str) -> Path:
+    """ Return the canonical processed path for the fixed research universe. """
+    return processed_path(start, end)
+
+def s3_factor_key(factor_name: str) -> str:
+    """ Return the S3 key that a mirrors a factor's local Parquet output. """
+    return f"factors/factor_name={factor_name}/values.parquet"
     
