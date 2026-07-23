@@ -54,3 +54,17 @@ Deliverables:
 - Market data basics notebook
 - Quant notes
 - Data schema draft
+
+### Week 2 — Data Pipeline
+
+Status: Core functionality complete; the data universe still needs expansion.
+
+Deliverables:
+- Downloader: `data_pipeline/ingestion/download.py`
+- OHLCV normalization and Parquet I/O: `data_pipeline/processing/normalize.py`
+- S3 sync utility: `data_pipeline/storage/s3_client.py`
+- Market data API: `backend/app/api/routes_market_data.py`
+- [Data quality report](docs/data_quality_week2.md)
+- [Week 2 review](docs/week2_review.md)
+
+Note: The current processed snapshot contains 2 tickers (`AAPL`, `SPY`); the Day 14 criterion of at least 5 tickers remains open.

@@ -35,3 +35,11 @@ build/
 docs/QUANTSCOPE_8_WEEK_PLAN.md
 docs/QUANTSCOPE_WEEK_1_DETAILED_PLAN.md
 docs/QUANTSCOPE_WEEK_2_DETAILED_PLAN.md
+
+# Test and lint caches
+.pytest_cache/
+.ruff_cache/
+
+# Private notes and local agent planning artifacts
+docs/week2_daily_questions_answers.md
+docs/superpowers/
