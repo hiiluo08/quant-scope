@@ -25,4 +25,11 @@ def load_processed(start: str, end: str) -> pd.DataFrame | None:
     if path.exists():
         return pd.read_parquet(path)
     return None
+
+# S3 key conventions (add to local_store.py)
+def s3_raw_key(source: str, start: str, end: str) -> str:
+    return f"raw/source={source}/prices_{start}_{end}.parquet"
+
+def s3_processed_key(start: str, end: str) -> str:
+    return f"processed/ohlcv_{start}_{end}.parquet"
     
