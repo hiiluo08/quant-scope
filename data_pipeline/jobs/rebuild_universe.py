@@ -58,15 +58,38 @@ def rebuild_universe(start_date: str, end_date: str, output_path: Path | None = 
     
     return processed
 
+def compute_and_store_default_factors(
+    processed_path: Path,
+    factors_root: Path | None = None,
+) -> list[Path]:
+    """Compute and persist every default factor for an existing processed snapshot."""
+    from data_pipeline.storage.local_store import FACTORS_DIR
+    from ml.factors.registry import build_default_registry
+    from ml.factors.storage import save_factor_values
+
+    source = pd.read_parquet(processed_path)
+    results = build_default_registry().compute_all(source)
+    root = factors_root or FACTORS_DIR
+    return [save_factor_values(frame, name, root=root) for name, frame in results.items()]
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Rebuild the 30-symbol QuantScope universe")
     parser.add_argument("--start-date", required=True, help="Inclusive start date, YYYY-MM-DD")
     parser.add_argument("--end-date", required=True, help="Exclusive end date, YYYY-MM-DD")
+    parser.add_argument(
+        "--compute-factors",
+        action="store_true",
+        help="Persist the default factor set after a successful universe rebuild",
+    )
     args = parser.parse_args()
     
     result = rebuild_universe(args.start_date, args.end_date)
+    output = universe_processed_path(args.start_date, args.end_date)
+    if args.compute_factors:
+        paths = compute_and_store_default_factors(output)
+        print(f"Saved {len(paths)} factor files")
     print(f"Saved {len(result):,} processed rows for {result['symbol'].nunique()} symbols")
-    
+
 
 if __name__ == "__main__":
     main()
