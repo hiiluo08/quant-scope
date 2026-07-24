@@ -1,0 +1,1 @@
+"""Reusable, causal factor implementations for processed OHLCV data."""
