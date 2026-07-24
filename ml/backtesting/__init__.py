@@ -1,0 +1,1 @@
+"""Causal, vectorized daily backtesting components."""
