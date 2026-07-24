@@ -1,10 +1,12 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     app_name: str = "QuantScope API"
-    processed_file: str = "data/processed/ohlcv_20220101_20241231.parquet"
-    
-    class Config:
-        env_file = ".env"
+    processed_file: str = "data/processed/ohlcv_20230101_20260701.parquet"
+    factors_dir: str = "data/factors"
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 settings = Settings()

@@ -3,8 +3,10 @@ from pathlib import Path
 import pandas as pd
 from typing import Optional
 
+from backend.app.core.config import settings
+
 router = APIRouter(prefix="/market-data", tags=["market_data"])
-PROCESSED_PATH = Path("data/processed/ohlcv_20220101_20241231.parquet")
+PROCESSED_PATH = Path(settings.processed_file)
 
 def load_data() -> pd.DataFrame:
     if not PROCESSED_PATH.exists():
