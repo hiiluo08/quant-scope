@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 import yfinance as yf
 import logging
@@ -35,13 +36,16 @@ def download_multiple_tickers(symbols: List[str], start_date: str, end_date: str
     frames = []
     errors = []
 
-    for symbol in symbols:
+    for idx, symbol in enumerate(symbols):
+        if idx > 0:
+            time.sleep(0.5)
         try:
             df = download_ticker(symbol, start_date, end_date)
             frames.append(df)
         except Exception as e:
             logger.warning(f'Failed to download {symbol}: {e}')
             errors.append(symbol)
+
 
     if errors:
         logger.warning(f"Skipped tickers: {errors}")

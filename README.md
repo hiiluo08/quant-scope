@@ -70,3 +70,17 @@ Deliverables:
 - [Week 2 Review](docs/week2_review.md)
 
 Note: The current processed snapshot contains two tickers (`AAPL` and `SPY`); the Day 14 requirement of at least five tickers remains open.
+
+### Week 3 — Factor Engine
+
+Status: Completed.
+
+Deliverables:
+
+- Universe rebuild job: `data_pipeline/jobs/rebuild_universe.py`
+- Factor modules and registry: `ml/factors/`
+- Factor storage: `ml/factors/storage.py`
+- Factor API: `backend/app/api/routes_factors.py`
+- [Factor report](docs/factor_report_week3.md)
+- [Week 3 review](docs/week3_review.md)
+
