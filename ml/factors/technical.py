@@ -10,7 +10,7 @@ class RSIFactor(Factor):
         if period < 1:
             raise ValueError("Period must be at least 1")
         self.period = period
-        self.name = f"rsi_{period}d"
+        self.name = f"rsi_{period}"
         self.warmup_periods = period
         
     def metadata(self) -> dict[str, object]:
