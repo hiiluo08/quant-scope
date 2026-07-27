@@ -1,15 +1,16 @@
 from pathlib import Path
 import pandas as pd
 
-DATA_ROOT = Path('data')
-RAW_DIR = DATA_ROOT / 'raw'
-PROCESSED_DIR = DATA_ROOT / 'processed'
-FACTORS_DIR = DATA_ROOT / 'factors'
-ARTIFACTS_DIR = DATA_ROOT / 'artifacts'
+DATA_ROOT = Path("data")
+RAW_DIR = DATA_ROOT / "raw"
+PROCESSED_DIR = DATA_ROOT / "processed"
+FACTORS_DIR = DATA_ROOT / "factors"
+ARTIFACTS_DIR = DATA_ROOT / "artifacts"
+BACKTESTS_DIR = ARTIFACTS_DIR / "backtests"
 
 def ensure_dir() -> None:
     """ Create all data directories if they don't exist. """
-    for d in [RAW_DIR, PROCESSED_DIR, FACTORS_DIR, ARTIFACTS_DIR / 'models', ARTIFACTS_DIR / 'backtests']:
+    for d in [RAW_DIR, PROCESSED_DIR, FACTORS_DIR, ARTIFACTS_DIR / "models", ARTIFACTS_DIR / "backtests"]:
         d.mkdir(parents=True, exist_ok=True)
 
 def raw_path(source: str, start: str, end: str) -> Path:
