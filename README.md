@@ -84,3 +84,17 @@ Deliverables:
 - [Factor report](docs/factor_report_week3.md)
 - [Week 3 review](docs/week3_review.md)
 
+### Week 4 — Backtesting Engine
+
+Status: Completed.
+
+Deliverables:
+- Backtest contracts/engine/metrics: `ml/backtesting/`
+- Baseline strategies: `ml/strategies/`
+- Batch runner: `data_pipeline/jobs/run_backtests.py`
+- Result API: `backend/app/api/routes_backtests.py`
+- [Methodology](docs/backtest_methodology_week4.md)
+- [Backtest report](docs/backtest_report_week4.md)
+- [Week 4 review](docs/week4_review.md)
+
+
