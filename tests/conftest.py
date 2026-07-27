@@ -47,7 +47,7 @@ def backtest_market_frame() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "date": list(dates) * 2,
-            "symbol": ["AAA"] * 5 + ["BBB"] * 5,
+            "symbol": ["AAA"] * 5 + ["SPY"] * 5,
             "adjusted_close": [100, 101, 111.1, 111.1, 122.21, 100, 100, 100, 110, 110],
             "return_1d": [0.0, 0.01, 0.10, 0.0, 0.10, 0.0, 0.0, 0.0, 0.10, 0.0],
             "is_valid": [True] * 10,
