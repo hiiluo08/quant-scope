@@ -1,0 +1,1 @@
+"""Rule-based strategies that transform persisted factors into causal signals."""
