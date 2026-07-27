@@ -53,3 +53,17 @@ def backtest_market_frame() -> pd.DataFrame:
             "is_valid": [True] * 10,
         }
     )
+    
+@pytest.fixture
+def daily_results() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "date": pd.date_range("2024-01-02", periods=2, freq="B"),
+            "gross_return": [0.0, 0.01],
+            "turnover": [0.0, 1.0],
+            "transaction_cost": [0.0, 0.001],
+            "net_return": [0.0, 0.009],
+            "portfolio_exposure": [0.0, 1.0],
+            "equity_curve": [1.0, 1.009],
+        }
+    )
