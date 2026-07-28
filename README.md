@@ -97,4 +97,19 @@ Deliverables:
 - [Backtest report](docs/backtest_report_week4.md)
 - [Week 4 review](docs/week4_review.md)
 
+### Week 5 — ML Alpha Prediction
+
+Status: Completed.
+
+Deliverables:
+- Labels and feature dataset: `ml/features/`
+- Time split/training/evaluation: `ml/training/`
+- Ranking strategy: `ml/strategies/ml_ranker.py`
+- Batch runner: `data_pipeline/jobs/run_ml_pipeline.py`
+- Model API: `backend/app/api/routes_models.py`
+- [Finance ML checklist](docs/finance_ml_checklist_week5.md)
+- [ML report](docs/ml_report_week5.md)
+- [Week 5 review](docs/week5_review.md)
+
+
 
