@@ -8,7 +8,7 @@ import type { ModelManifest, PredictionRow, PredictionSplit } from '../api/types
 
 const formatMetric = (value: number | null | undefined) => (
   value === null || value === undefined || !Number.isFinite(value)
-    ? 'Not available'
+    ? '—'
     : value.toFixed(4)
 )
 
@@ -44,7 +44,7 @@ export const MLLabPage: React.FC = () => {
   ]
 
   return (
-    <div className="ml-lab-page">
+    <div className="stack page-enter">
       <ResearchNotice message="ML Lab is research-only: validation/test metrics and predictions are not proven alpha, trading recommendations or a promise of profitability." />
       <section className="card">
         <h1 className="card-title">ML Lab</h1>
@@ -57,27 +57,31 @@ export const MLLabPage: React.FC = () => {
             </div>
           ) : (
             <div className="controls">
-              <label htmlFor="model-select">Model</label>
-              <select
-                id="model-select"
-                value={modelId}
-                onChange={(event) => setModelId(event.target.value)}
-              >
-                {models.models.map((model) => (
-                  <option key={model.model_id} value={model.model_id}>
-                    {model.model_id} — {model.family}
-                  </option>
-                ))}
-              </select>
-              <label htmlFor="split-select">Prediction split</label>
-              <select
-                id="split-select"
-                value={split}
-                onChange={(event) => setSplit(event.target.value as PredictionSplit)}
-              >
-                <option value="test">test</option>
-                <option value="validation">validation</option>
-              </select>
+              <div className="control-group">
+                <label htmlFor="model-select" className="control-label">Model</label>
+                <select
+                  id="model-select"
+                  value={modelId}
+                  onChange={(event) => setModelId(event.target.value)}
+                >
+                  {models.models.map((model) => (
+                    <option key={model.model_id} value={model.model_id}>
+                      {model.model_id} — {model.family}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="control-group">
+                <label htmlFor="split-select" className="control-label">Prediction split</label>
+                <select
+                  id="split-select"
+                  value={split}
+                  onChange={(event) => setSplit(event.target.value as PredictionSplit)}
+                >
+                  <option value="test">test</option>
+                  <option value="validation">validation</option>
+                </select>
+              </div>
             </div>
           )}
         </AsyncState>
@@ -86,26 +90,48 @@ export const MLLabPage: React.FC = () => {
       {modelId && (
         <AsyncState state={manifestState}>
           {(manifest: ModelManifest) => (
-            <section className="card" style={{ marginTop: '1rem' }}>
-              <h2>{manifest.family} · {manifest.model_id}</h2>
-              <p>Model file: {manifest.model_file}</p>
-              <p>Label: {manifest.label.name}, horizon {manifest.label.horizon_days} days</p>
-              <p>Features: {manifest.feature_columns.join(', ')}</p>
-              <p>Factor versions: {JSON.stringify(manifest.factor_versions)}</p>
-              <p>Split dates: {JSON.stringify(manifest.split_dates)}</p>
-              <p>Parameters: {JSON.stringify(manifest.parameters)}</p>
-              <div className="metric-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
-                <section className="card">
-                  <h3>Validation metrics</h3>
-                  {Object.entries(manifest.metrics.validation).map(([key, value]) => (
-                    <p key={key}>{key}: {formatMetric(value)}</p>
-                  ))}
+            <section className="card stack-sm">
+              <h2 className="card-title">{manifest.family} · {manifest.model_id}</h2>
+              
+              <div className="kv-grid">
+                <span className="kv-key">Model file</span>
+                <span className="kv-value">{manifest.model_file}</span>
+                <span className="kv-key">Family</span>
+                <span className="kv-value">{manifest.family}</span>
+                <span className="kv-key">Label</span>
+                <span className="kv-value">{manifest.label.name} · {manifest.label.horizon_days}d horizon</span>
+                <span className="kv-key">Features</span>
+                <span className="kv-value"><code>{manifest.feature_columns.join(', ')}</code></span>
+                <span className="kv-key">Factor versions</span>
+                <span className="kv-value"><code>{Object.entries(manifest.factor_versions).map(([k,v]) => `${k}: ${v}`).join(', ')}</code></span>
+                <span className="kv-key">Split dates</span>
+                <span className="kv-value"><code>{Object.entries(manifest.split_dates).map(([k,v]) => `${k}: ${v}`).join(', ')}</code></span>
+                <span className="kv-key">Parameters</span>
+                <span className="kv-value"><code>{Object.entries(manifest.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</code></span>
+              </div>
+
+              <div className="comparison-grid">
+                <section className="comparison-column">
+                  <h3 className="comparison-column-title">Validation metrics</h3>
+                  <div className="kv-grid">
+                    {Object.entries(manifest.metrics.validation).map(([key, value]) => (
+                      <React.Fragment key={key}>
+                        <span className="kv-key">{key}</span>
+                        <span className="kv-value">{formatMetric(value)}</span>
+                      </React.Fragment>
+                    ))}
+                  </div>
                 </section>
-                <section className="card">
-                  <h3>Held-out test metrics</h3>
-                  {Object.entries(manifest.metrics.test).map(([key, value]) => (
-                    <p key={key}>{key}: {formatMetric(value)}</p>
-                  ))}
+                <section className="comparison-column">
+                  <h3 className="comparison-column-title">Held-out test metrics</h3>
+                  <div className="kv-grid">
+                    {Object.entries(manifest.metrics.test).map(([key, value]) => (
+                      <React.Fragment key={key}>
+                        <span className="kv-key">{key}</span>
+                        <span className="kv-value">{formatMetric(value)}</span>
+                      </React.Fragment>
+                    ))}
+                  </div>
                 </section>
               </div>
             </section>
@@ -116,7 +142,7 @@ export const MLLabPage: React.FC = () => {
       {modelId && (
         <AsyncState state={predictionsState}>
           {(response) => (
-            <div className="card" style={{ marginTop: '1rem' }}>
+            <div className="card">
               <DataTable
                 caption={`Predictions for ${response.model_id} — ${response.split}`}
                 columns={columns}

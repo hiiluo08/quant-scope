@@ -37,7 +37,7 @@ describe('MLLabPage', () => {
     expect(screen.getByLabelText('Prediction split')).toHaveValue('test')
     expect(await screen.findByRole('heading', { level: 2, name: /model-demo-001/i })).toBeInTheDocument()
     expect((await screen.findAllByText(/momentum_20d/i)).length).toBeGreaterThan(0)
-    expect((await screen.findAllByText(/Not available/i)).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText('—')).length).toBeGreaterThan(0)
     expect((await screen.findAllByText('SPY')).length).toBeGreaterThan(0)
     expect(screen.getByText(/research-only/i)).toBeInTheDocument()
     expect(screen.queryByText(/buy|sell/i)).not.toBeInTheDocument()

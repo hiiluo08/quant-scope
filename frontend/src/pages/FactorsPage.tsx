@@ -78,7 +78,7 @@ export const FactorsPage: React.FC = () => {
   ]
 
   return (
-    <div className="factors-page">
+    <div className="stack page-enter">
       <ResearchNotice message="Factors are persisted research features, not trading signals or investment advice." />
       <section className="card">
         <h1 className="card-title">Factors Explorer</h1>
@@ -87,24 +87,39 @@ export const FactorsPage: React.FC = () => {
             <div className="async-empty"><h2>No factor catalog available</h2><p>Run the factor pipeline, then retry.</p><button type="button" onClick={catalogState.retry}>Retry</button></div>
           ) : (
             <div className="controls">
-              <label htmlFor="factor-select">Factor</label>
-              <select id="factor-select" value={factorName} onChange={(event) => setFactorName(event.target.value)}>
-                {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{factor.name}</option>)}
-              </select>
-              <label htmlFor="factor-symbol-select">Symbol</label>
-              <select id="factor-symbol-select" value={symbol} onChange={(event) => setSymbol(event.target.value)} disabled={symbols.length === 0}>
-                {symbols.map((item) => <option key={item} value={item}>{item}</option>)}
-              </select>
+              <div className="control-group">
+                <label htmlFor="factor-select" className="control-label">Factor</label>
+                <select id="factor-select" value={factorName} onChange={(event) => setFactorName(event.target.value)}>
+                  {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{factor.name}</option>)}
+                </select>
+              </div>
+              <div className="control-group">
+                <label htmlFor="factor-symbol-select" className="control-label">Symbol</label>
+                <select id="factor-symbol-select" value={symbol} onChange={(event) => setSymbol(event.target.value)} disabled={symbols.length === 0}>
+                  {symbols.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+              </div>
             </div>
           )}
         </AsyncState>
       </section>
 
       {metadata && <section className="card" aria-label="Factor metadata">
-        <p>Factor version: {metadata.version}</p>
-        <p>Warm-up periods: {metadata.warmup_periods}</p>
-        {metadata.parameters && <p>Parameters: {JSON.stringify(metadata.parameters)}</p>}
-        <p>Rows excluded from chart because factor value is null/non-finite: {warmupExcluded}</p>
+        <h2 className="card-section-title">Factor Metadata</h2>
+        <div className="kv-grid">
+          <span className="kv-key">Factor version</span>
+          <span className="kv-value">{metadata.version}</span>
+          <span className="kv-key">Warm-up periods</span>
+          <span className="kv-value">{metadata.warmup_periods}</span>
+          {metadata.parameters && (
+            <>
+              <span className="kv-key">Parameters</span>
+              <span className="kv-value"><code>{Object.entries(metadata.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</code></span>
+            </>
+          )}
+          <span className="kv-key">Rows excluded (warm-up)</span>
+          <span className="kv-value">{warmupExcluded}</span>
+        </div>
       </section>}
 
       {factorName && symbol && <AsyncState state={seriesState}>

@@ -15,15 +15,15 @@ interface DataTableProps<T> {
 
 export function DataTable<T>({ caption, columns, data, getRowKey }: DataTableProps<T>) {
     return (
-        <div className="table-container" style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-                <caption style={{ textAlign: 'left', fontWeight: 'bold', paddingBottom: '0.5rem' }}>
+        <div className="table-wrapper">
+            <table className="data-table">
+                <caption>
                     {caption}
                 </caption>
                 <thead>
-                    <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left' }}>
+                    <tr>
                         {columns.map((col) => (
-                            <th key={col.key} scope="col" style={{ padding: '8px 12px' }}>
+                            <th key={col.key} scope="col">
                                 {col.header}
                             </th>
                         ))}
@@ -31,9 +31,9 @@ export function DataTable<T>({ caption, columns, data, getRowKey }: DataTablePro
                 </thead>
                 <tbody>
                     {data.map((row) => (
-                    <tr key={getRowKey(row)} style={{ borderBottom: '1px solid var(--border)'}}>
+                    <tr key={getRowKey(row)}>
                         {columns.map((col) => (
-                            <td key={col.key} style={{ padding: '8px 12px' }}>
+                            <td key={col.key}>
                                 {col.render(row)}
                             </td>
                         ))}

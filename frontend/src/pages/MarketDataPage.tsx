@@ -38,29 +38,29 @@ export const MarketDataPage: React.FC = () => {
 	]
 
 	return (
-		<div className="market-data-page">
+		<div className="stack page-enter">
 			<ResearchNotice message="Market Data Explorer: Displays daily normalized OHLCV data. Past prices are not indicative of future returns." />
 
-			<div className="card" style={{ marginBottom: '1rem' }}>
+			<div className="card">
 				<h1 className="card-title">Market Data Explorer</h1>
 				<AsyncState state={symbolsState}>
 					{(symbolsData) => (
-						<div style={{ marginTop: '0.5rem' }}>
-							<label htmlFor="symbol-select" style={{ marginRight: '0.5rem', fontWeight: 'bold' }}>
-								Symbol:
-							</label>
-							<select
-								id="symbol-select"
-								aria-label="Symbol"
-								value={selectedSymbol}
-								onChange={(e) => setSelectedSymbol(e.target.value)}
-								style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solidvar(--border)' }}>
-								{symbolsData.symbols.map((sym) => (
-									<option key={sym} value={sym}>
-										{sym}
-									</option>
-								))}
-							</select>
+						<div className="controls">
+							<div className="control-group">
+								<label htmlFor="symbol-select" className="control-label">
+									Symbol
+								</label>
+								<select
+									id="symbol-select"
+									value={selectedSymbol}
+									onChange={(e) => setSelectedSymbol(e.target.value)}>
+									{symbolsData.symbols.map((sym) => (
+										<option key={sym} value={sym}>
+											{sym}
+										</option>
+									))}
+								</select>
+							</div>
 						</div>
 					)}
 				</AsyncState>
@@ -90,7 +90,7 @@ export const MarketDataPage: React.FC = () => {
 									type="bar"
 								/>
 
-								<div className="card" style={{ marginTop: '1rem' }}>
+								<div className="card">
 									<DataTable
 									caption={`Recent 100 sessions for ${marketData.symbol}`}
 									columns={columns}

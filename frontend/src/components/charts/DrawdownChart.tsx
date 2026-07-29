@@ -4,8 +4,8 @@ import type { DrawdownRow } from '../../pages/backtestTransforms'
 export function DrawdownChart({ data }: { data: DrawdownRow[] }) {
   return (
     <section className="card" aria-label="Drawdown from running peak">
-      <h2>Drawdown from running peak</h2>
-      <div style={{ width: '100%', height: 300 }}>
+      <h3 className="chart-title">Drawdown from running peak</h3>
+      <div className="chart-container">
         <ResponsiveContainer>
           <AreaChart data={data}>
             <XAxis dataKey="date" />

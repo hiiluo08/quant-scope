@@ -37,7 +37,7 @@ describe('BacktestsPage', () => {
 
   it('formats missing metrics as Not available and separates charts', async () => {
     render(<BacktestsPage />)
-    expect((await screen.findAllByText('Not available')).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText('—')).length).toBeGreaterThan(0)
     expect(screen.getByRole('heading', { name: /Net equity curve after modeled costs/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Drawdown from running peak/i })).toBeInTheDocument()
     expect(screen.queryByText('NaN')).not.toBeInTheDocument()

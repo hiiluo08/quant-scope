@@ -45,7 +45,7 @@ export const BacktestsPage: React.FC = () => {
   ]
 
   return (
-    <div className="backtests-page">
+    <div className="stack page-enter">
       <ResearchNotice message="Timing: signal at t, position/PnL at t+1. This artifact models 5 bps transaction cost and 5 bps slippage; historical research is not a guarantee or investment advice." />
       <section className="card">
         <h1 className="card-title">Backtest Results</h1>
@@ -57,20 +57,22 @@ export const BacktestsPage: React.FC = () => {
               <button type="button" onClick={listState.retry}>Retry</button>
             </div>
           ) : (
-            <>
-              <label htmlFor="backtest-select">Backtest artifact</label>
-              <select
-                id="backtest-select"
-                value={backtestId}
-                onChange={(event) => setBacktestId(event.target.value)}
-              >
-                {list.backtests.map((item) => (
-                  <option key={item.backtest_id} value={item.backtest_id}>
-                    {item.strategy_name} — {item.backtest_id}
-                  </option>
-                ))}
-              </select>
-            </>
+            <div className="controls">
+              <div className="control-group">
+                <label htmlFor="backtest-select" className="control-label">Backtest artifact</label>
+                <select
+                  id="backtest-select"
+                  value={backtestId}
+                  onChange={(event) => setBacktestId(event.target.value)}
+                >
+                  {list.backtests.map((item) => (
+                    <option key={item.backtest_id} value={item.backtest_id}>
+                      {item.strategy_name} — {item.backtest_id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           )}
         </AsyncState>
       </section>
@@ -78,10 +80,16 @@ export const BacktestsPage: React.FC = () => {
       {backtestId && (
         <AsyncState state={metadataState}>
           {(metadata: BacktestMetadata) => (
-            <section className="card">
-              <h2>{metadata.strategy_name}</h2>
-              <p>Engine {metadata.engine_version} · {metadata.start_date} to {metadata.end_date}</p>
-              <p>Factor versions: {JSON.stringify(metadata.factor_versions)}</p>
+            <section className="card stack-sm">
+              <h2 className="card-title">{metadata.strategy_name}</h2>
+              <div className="kv-grid">
+                <span className="kv-key">Engine version</span>
+                <span className="kv-value">{metadata.engine_version}</span>
+                <span className="kv-key">Period</span>
+                <span className="kv-value">{metadata.start_date} to {metadata.end_date}</span>
+                <span className="kv-key">Factor versions</span>
+                <span className="kv-value"><code>{Object.entries(metadata.factor_versions).map(([k,v]) => `${k}: ${v}`).join(', ')}</code></span>
+              </div>
               <div className="metric-grid">
                 {[
                   ['Total return', metadata.metrics.total_return, formatPercent],

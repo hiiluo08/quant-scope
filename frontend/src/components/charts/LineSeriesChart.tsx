@@ -29,9 +29,9 @@ export const LineSeriesChart: React.FC<LineSeriesChartProps> = ({
     type = 'line',
 }) => {
     return (
-    <div className="card" style={{ marginTop: '1rem' }}>
-        <h3 style={{ margin: '0 0 1rem 0' }}>{title}</h3>
-        <div style={{ width: '100%', height: 300 }}>
+    <div className="card">
+        <h3 className="chart-title">{title}</h3>
+        <div className="chart-container">
         <ResponsiveContainer width="100%" height="100%">
             {type === 'line' ? (
             <LineChart data={data}>
