@@ -15,12 +15,16 @@ export function AsyncState<T>({
   errorMessage = 'An error occurred while fetching data.',
 }: AsyncStateProps<T>): React.ReactElement {
   if (state.status === 'loading') {
-    return <div className="async-loading">Loading data...</div>
+    return (
+      <div className="async-loading" role="status">
+        Loading research data...
+      </div>
+    )
   }
 
   if (state.status === 'error') {
     return (
-      <div className="async-error">
+      <div className="async-error" role="alert">
         <p>{errorMessage}</p>
         <p><strong>Detail:</strong> {state.error.message}</p>
         <button type="button" onClick={state.retry}>
