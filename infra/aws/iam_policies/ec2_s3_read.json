@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadQuantScopeResearchArtifacts",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::quantscope-data-dev-<unique-suffix>",
+        "arn:aws:s3:::quantscope-data-dev-<unique-suffix>/processed/*",
+        "arn:aws:s3:::quantscope-data-dev-<unique-suffix>/factors/*",
+        "arn:aws:s3:::quantscope-data-dev-<unique-suffix>/artifacts/*"
+      ]
+    }
+  ]
+}
