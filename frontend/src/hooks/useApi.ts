@@ -14,6 +14,7 @@ export function useApi<T>(key: string, request: (signal: AbortSignal) => Promise
         { status: 'loading', retry } as ApiState<T>
     )
     useEffect(() => {
+        if (!key) return
         const controller = new AbortController()
         setState({ status: 'loading', retry })
         request(controller.signal)
