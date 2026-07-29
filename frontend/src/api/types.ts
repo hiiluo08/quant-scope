@@ -104,9 +104,9 @@ export type BacktestDailyResponse = {
   data: DailyBacktestRow[];
 };
 
-export type ModelFamily = 'xgboost' | 'lightgbm';
+export type ModelFamily = "xgboost" | "lightgbm";
 export type ModelMetricMap = Record<string, number | null>;
-export type PredictionSplit = 'validation' | 'test';
+export type PredictionSplit = "validation" | "test";
 
 export type ModelManifest = {
   model_id: string;

@@ -7,6 +7,10 @@ import type {
   BacktestDailyResponse,
   BacktestListResponse,
   BacktestMetadata,
+  ModelListResponse,
+  ModelManifest,
+  PredictionResponse,
+  PredictionSplit,
 } from "./types";
 
 export const getSymbols = (signal?: AbortSignal) =>
@@ -53,20 +57,17 @@ export const getBacktestDaily = (backtestId: string, signal?: AbortSignal) =>
   );
 
 export const getModels = (signal?: AbortSignal) =>
-  getJson<import("./types").ModelListResponse>("/models", signal);
+  getJson<ModelListResponse>("/models", signal);
 
 export const getModel = (modelId: string, signal?: AbortSignal) =>
-  getJson<import("./types").ModelManifest>(
-    `/models/${encodeURIComponent(modelId)}`,
-    signal,
-  );
+  getJson<ModelManifest>(`/models/${encodeURIComponent(modelId)}`, signal);
 
 export const getPredictions = (
   modelId: string,
-  split: import("./types").PredictionSplit,
+  split: PredictionSplit,
   signal?: AbortSignal,
 ) =>
-  getJson<import("./types").PredictionResponse>(
+  getJson<PredictionResponse>(
     `/models/${encodeURIComponent(modelId)}/predictions?split=${split}&limit=500`,
     signal,
   );
