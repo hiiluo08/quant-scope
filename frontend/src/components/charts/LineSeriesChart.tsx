@@ -11,6 +11,13 @@ import {
     CartesianGrid,
 } from 'recharts'
 
+const formatValue = (value: number) => {
+    if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B'
+    if (value >= 1e6) return (value / 1e6).toFixed(2) + 'M'
+    if (value >= 1e3) return (value / 1e3).toFixed(2) + 'K'
+    return value.toFixed(2)
+}
+
 interface LineSeriesChartProps {
     title: string
     data: Array<Record<string, any>>
@@ -36,18 +43,26 @@ export const LineSeriesChart: React.FC<LineSeriesChartProps> = ({
             {type === 'line' ? (
             <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={xKey} tick={{ fill: 'var(--ink)' }} />
-                <YAxis domain={['auto', 'auto']} tick={{ fill: 'var(--ink)' }} />
-                <Tooltip />
-                <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} strokeWidth={2} />
+                <XAxis dataKey={xKey} tick={{ fill: 'var(--text-muted)' }} tickMargin={8} minTickGap={30} />
+                <YAxis domain={['auto', 'auto']} tick={{ fill: 'var(--text-muted)' }} tickFormatter={formatValue} width={60} />
+                <Tooltip 
+                    cursor={{ stroke: 'var(--gray-300)', strokeDasharray: '3 3' }}
+                    formatter={(value: any) => [formatValue(Number(value)), dataKey]}
+                    labelStyle={{ color: 'var(--gray-400)', marginBottom: '4px' }}
+                />
+                <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} strokeWidth={2} activeDot={{ r: 4, strokeWidth: 0 }} />
             </LineChart>
             ) : (
             <BarChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={xKey} tick={{ fill: 'var(--ink)' }} />
-                <YAxis tick={{ fill: 'var(--ink)' }} />
-                <Tooltip />
-                <Bar dataKey={dataKey} fill={color} />
+                <XAxis dataKey={xKey} tick={{ fill: 'var(--text-muted)' }} tickMargin={8} minTickGap={30} />
+                <YAxis tick={{ fill: 'var(--text-muted)' }} tickFormatter={formatValue} width={60} />
+                <Tooltip 
+                    cursor={{ fill: 'var(--gray-100)' }}
+                    formatter={(value: any) => [formatValue(Number(value)), dataKey]}
+                    labelStyle={{ color: 'var(--gray-400)', marginBottom: '4px' }}
+                />
+                <Bar dataKey={dataKey} fill={color} radius={[2, 2, 0, 0]} />
             </BarChart>
             )}
         </ResponsiveContainer>
