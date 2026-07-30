@@ -34,21 +34,13 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ symbols, selectedSymbol, o
       <input
         type="text"
         className="form-input"
-        placeholder="Search 500+ symbols..."
+        placeholder="Search symbols..."
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
           setIsOpen(true);
         }}
         onFocus={() => setIsOpen(true)}
-        style={{
-          width: '100%',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          border: '1px solid var(--border)',
-          background: 'var(--surface)',
-          color: 'var(--ink)'
-        }}
       />
       {isOpen && filteredSymbols.length > 0 && (
         <ul
@@ -59,14 +51,14 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ symbols, selectedSymbol, o
             right: 0,
             maxHeight: '300px',
             overflowY: 'auto',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '6px',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-md)',
             marginTop: '4px',
             padding: 0,
             listStyle: 'none',
             zIndex: 10,
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
+            boxShadow: 'var(--shadow-md)'
           }}
         >
           {filteredSymbols.map((sym) => (
@@ -79,10 +71,11 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ symbols, selectedSymbol, o
               style={{
                 padding: '8px 12px',
                 cursor: 'pointer',
-                color: 'var(--ink)',
-                borderBottom: '1px solid var(--border-light)'
+                color: 'var(--text-primary)',
+                borderBottom: '1px solid var(--border-subtle)',
+                fontSize: '0.875rem'
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--page-bg)')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface-hover)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
               {sym}

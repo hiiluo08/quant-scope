@@ -10,6 +10,13 @@ import { SearchBox } from '../components/SearchBox'
 import type { MarketRow } from '../api/types'
 
 export const MarketDataPage: React.FC = () => {
+	const formatVolume = (val?: number) => {
+		if (val === undefined) return '0';
+		if (val >= 1e9) return (val / 1e9).toFixed(2) + 'B';
+		if (val >= 1e6) return (val / 1e6).toFixed(2) + 'M';
+		if (val >= 1e3) return (val / 1e3).toFixed(2) + 'K';
+		return val.toFixed(0);
+	}
 	const [selectedSymbol, setSelectedSymbol] = useState<string>('')
 	const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL')
 	const symbolsState = useApi('symbols', getSymbols)
@@ -82,6 +89,21 @@ export const MarketDataPage: React.FC = () => {
 
 						return (
 							<>
+								<div className="kpi-grid">
+									<div className="kpi-card">
+										<div className="kpi-label">Latest Close</div>
+										<div className="kpi-value">${filteredRows[filteredRows.length - 1]?.close.toFixed(2)}</div>
+									</div>
+									<div className="kpi-card">
+										<div className="kpi-label">Latest Volume</div>
+										<div className="kpi-value">{formatVolume(filteredRows[filteredRows.length - 1]?.volume)}</div>
+									</div>
+									<div className="kpi-card">
+										<div className="kpi-label">30-Day Avg Volume</div>
+										<div className="kpi-value">{formatVolume(filteredRows.slice(-30).reduce((a, b) => a + b.volume, 0) / Math.min(30, filteredRows.length))}</div>
+									</div>
+								</div>
+
 								<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
 									{['1M', '3M', '6M', '1Y', 'ALL'].map(range => (
 										<button 
@@ -89,13 +111,14 @@ export const MarketDataPage: React.FC = () => {
 											onClick={() => setTimeRange(range as any)}
 											style={{
 												padding: '6px 16px',
-												background: timeRange === range ? 'var(--data-primary)' : 'var(--surface)',
-												color: timeRange === range ? '#fff' : 'var(--ink)',
-												border: `1px solid ${timeRange === range ? 'var(--data-primary)' : 'var(--border)'}`,
-												borderRadius: '20px',
+												background: timeRange === range ? 'var(--accent-primary)' : 'var(--bg-surface)',
+												color: timeRange === range ? 'var(--accent-primary-text)' : 'var(--text-primary)',
+												border: `1px solid ${timeRange === range ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+												borderRadius: 'var(--radius-full)',
 												cursor: 'pointer',
 												fontWeight: 500,
-												transition: 'all 0.2s'
+												fontSize: '0.875rem',
+												transition: 'all var(--transition-fast)'
 											}}
 										>
 											{range}
@@ -112,7 +135,7 @@ export const MarketDataPage: React.FC = () => {
 									title={`${marketData.symbol} — Trading Volume`}
 									data={filteredRows}
 									dataKey="volume"
-									color="var(--data-secondary)"
+									color="var(--data-blue)"
 									type="bar"
 								/>
 

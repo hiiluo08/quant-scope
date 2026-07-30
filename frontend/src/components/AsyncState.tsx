@@ -16,8 +16,10 @@ export function AsyncState<T>({
 }: AsyncStateProps<T>): React.ReactElement {
   if (state.status === 'loading') {
     return (
-      <div className="async-loading" role="status">
-        Loading research data...
+      <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ height: '32px', width: '200px', backgroundColor: 'var(--bg-surface-hover)', borderRadius: 'var(--radius-md)', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}></div>
+        <div style={{ height: '200px', width: '100%', backgroundColor: 'var(--bg-surface-hover)', borderRadius: 'var(--radius-md)', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite', animationDelay: '100ms' }}></div>
+        <div style={{ height: '64px', width: '100%', backgroundColor: 'var(--bg-surface-hover)', borderRadius: 'var(--radius-md)', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite', animationDelay: '200ms' }}></div>
       </div>
     )
   }

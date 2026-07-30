@@ -42,27 +42,31 @@ export const LineSeriesChart: React.FC<LineSeriesChartProps> = ({
         <ResponsiveContainer width="100%" height="100%">
             {type === 'line' ? (
             <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={xKey} tick={{ fill: 'var(--text-muted)' }} tickMargin={8} minTickGap={30} />
-                <YAxis domain={['auto', 'auto']} tick={{ fill: 'var(--text-muted)' }} tickFormatter={formatValue} width={60} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
+                <XAxis dataKey={xKey} stroke="var(--text-muted)" tickFormatter={(val) => val.substring(5)} tickLine={false} axisLine={false} tickMargin={8} minTickGap={30} />
+                <YAxis domain={['auto', 'auto']} stroke="var(--text-muted)" tickLine={false} axisLine={false} tickFormatter={formatValue} width={60} />
                 <Tooltip 
-                    cursor={{ stroke: 'var(--gray-300)', strokeDasharray: '3 3' }}
+                    cursor={{ stroke: 'var(--border-strong)', strokeDasharray: '3 3' }}
                     formatter={(value: any) => [formatValue(Number(value)), dataKey]}
-                    labelStyle={{ color: 'var(--gray-400)', marginBottom: '4px' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-default)', borderRadius: '8px', boxShadow: 'var(--shadow-md)', color: 'var(--text-primary)' }}
+                    itemStyle={{ color: 'var(--text-primary)' }}
+                    labelStyle={{ color: 'var(--text-muted)', marginBottom: '4px' }}
                 />
-                <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} strokeWidth={2} activeDot={{ r: 4, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} strokeWidth={2} activeDot={{ r: 4, strokeWidth: 0, fill: color }} />
             </LineChart>
             ) : (
             <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey={xKey} tick={{ fill: 'var(--text-muted)' }} tickMargin={8} minTickGap={30} />
-                <YAxis tick={{ fill: 'var(--text-muted)' }} tickFormatter={formatValue} width={60} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" vertical={false} />
+                <XAxis dataKey={xKey} stroke="var(--text-muted)" tickFormatter={(val) => val.substring(5)} tickLine={false} axisLine={false} tickMargin={8} minTickGap={30} />
+                <YAxis stroke="var(--text-muted)" tickLine={false} axisLine={false} tickFormatter={formatValue} width={60} />
                 <Tooltip 
-                    cursor={{ fill: 'var(--gray-100)' }}
+                    cursor={{ fill: 'var(--bg-surface-hover)' }}
                     formatter={(value: any) => [formatValue(Number(value)), dataKey]}
-                    labelStyle={{ color: 'var(--gray-400)', marginBottom: '4px' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-default)', borderRadius: '8px', boxShadow: 'var(--shadow-md)', color: 'var(--text-primary)' }}
+                    itemStyle={{ color: 'var(--text-primary)' }}
+                    labelStyle={{ color: 'var(--text-muted)', marginBottom: '4px' }}
                 />
-                <Bar dataKey={dataKey} fill={color} radius={[2, 2, 0, 0]} />
+                <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} isAnimationActive={false} />
             </BarChart>
             )}
         </ResponsiveContainer>
