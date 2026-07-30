@@ -13,19 +13,10 @@ def load_data() -> pd.DataFrame:
         raise HTTPException(status_code=503, detail="Processed data not found. Run data pipeline first.")
     return pd.read_parquet(PROCESSED_PATH)
 
-import json
-
 @router.get("/symbols")
 def get_symbols():
-    config_path = Path("data/config/tickers.json")
-    with open(config_path) as f:
-        config = json.load(f)
-    
-    all_symbols = []
-    for sector_data in config["sectors"].values():
-        all_symbols.extend(sector_data["symbols"])
-    
-    symbols = sorted(list(set(all_symbols)))
+    df = load_data()
+    symbols = sorted(df['symbol'].unique().tolist())
     return {"symbols": symbols, "count": len(symbols)}
 
 @router.get("/{symbol}")
