@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -8,15 +10,32 @@ import pandas as pd
 from data_pipeline.ingestion.download import download_multiple_tickers
 from data_pipeline.processing.normalize import normalize_ohlcv, save_parquet
 from data_pipeline.processing.validate import validate_ohlcv
+from data_pipeline.processing.quality_gate import run_quality_gate
 from data_pipeline.storage.local_store import ensure_dir, universe_processed_path
 
-UNIVERSE_TICKERS = (
-    "SPY", "QQQ", "DIA", "IWM", "XLK", "XLF", "XLE", "XLV", "XLY", "XLP",
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "JPM", "BAC", "JNJ",
-    "UNH", "XOM", "CVX", "WMT", "COST", "PG", "KO", "HD", "DIS", "NFLX",
-)
+logger = logging.getLogger(__name__)
 
-MIN_TRADING_ROWS = 504
+TICKERS_CONFIG_PATH = Path("data/config/tickers.json")
+
+def load_universe_tickers(config_path: Path = TICKERS_CONFIG_PATH) -> tuple[str, ...]:
+    """Load ticker universe from tickers.json config file."""
+    with open(config_path) as f:
+        config = json.load(f)
+    all_symbols: list[str] = []
+    for sector_data in config["sectors"].values():
+        all_symbols.extend(sector_data["symbols"])
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique: list[str] = []
+    for s in all_symbols:
+        if s not in seen:
+            seen.add(s)
+            unique.append(s)
+    return tuple(unique)
+
+UNIVERSE_TICKERS = load_universe_tickers()
+
+MIN_TRADING_ROWS = 252
 
 def _validate_universe(df: pd.DataFrame) -> None:
     observed = set(df["symbol"].unique())
@@ -49,7 +68,17 @@ def rebuild_universe(start_date: str, end_date: str, output_path: Path | None = 
     """ Build and persist the complete fixed research universe. """
     ensure_dir()
     raw = download_multiple_tickers(list(UNIVERSE_TICKERS), start_date, end_date)
-    processed = normalize_ohlcv(raw)
+    
+    # Quality Gate: filter bad data before normalization
+    clean_raw, quarantined, qg_report = run_quality_gate(raw)
+    if not quarantined.empty:
+        q_path = (output_path or universe_processed_path(start_date, end_date)).parent
+        q_path = q_path / "quarantine" / f"quarantine_{start_date}_{end_date}.parquet"
+        q_path.parent.mkdir(parents=True, exist_ok=True)
+        quarantined.to_parquet(q_path, index=False)
+        logger.info(f"Quarantined {len(quarantined)} rows -> {q_path}")
+
+    processed = normalize_ohlcv(clean_raw)
     _validate_universe(processed)
     _validate_quality(validate_ohlcv(processed))
 

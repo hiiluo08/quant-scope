@@ -12,6 +12,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com",
+        "https://<api-id>.execute-api.ap-southeast-1.amazonaws.com",
         "http://localhost:5173",
         "http://localhost:3000",
     ],

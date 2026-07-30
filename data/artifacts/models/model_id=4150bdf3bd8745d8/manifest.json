@@ -1,0 +1,62 @@
+{
+  "factor_versions": {
+    "momentum_20d": "v1",
+    "momentum_60d": "v1",
+    "rsi_14": "v1",
+    "sma_ratio_20_50": "v1",
+    "volatility_20d": "v1",
+    "volume_zscore_20d": "v1"
+  },
+  "family": "xgboost",
+  "feature_columns": [
+    "momentum_20d",
+    "momentum_60d",
+    "volatility_20d",
+    "rsi_14",
+    "sma_ratio_20_50",
+    "volume_zscore_20d"
+  ],
+  "label": {
+    "horizon_days": 5,
+    "name": "forward_return_5d"
+  },
+  "metrics": {
+    "test": {
+      "directional_accuracy": 0.5281893004115227,
+      "mae": 0.027655473742422162,
+      "rank_ic": -0.0005257408326051593,
+      "rmse": 0.03712238776883697
+    },
+    "validation": {
+      "directional_accuracy": 0.6038216560509554,
+      "mae": 0.02711214918413219,
+      "rank_ic": 0.12039862521237192,
+      "rmse": 0.040855652965382766
+    }
+  },
+  "model_file": "model.json",
+  "model_id": "4150bdf3bd8745d8",
+  "parameters": {
+    "colsample_bytree": 0.8,
+    "device": "cuda",
+    "early_stopping_rounds": 25,
+    "eval_metric": "rmse",
+    "learning_rate": 0.02,
+    "max_depth": 3,
+    "n_estimators": 500,
+    "n_jobs": 1,
+    "objective": "reg:squarederror",
+    "random_state": 42,
+    "reg_lambda": 1.0,
+    "subsample": 0.8,
+    "tree_method": "hist"
+  },
+  "split_dates": {
+    "test_end": "2026-06-23",
+    "test_start": "2025-10-29",
+    "train_end": "2025-02-28",
+    "train_start": "2023-03-30",
+    "validation_end": "2025-10-21",
+    "validation_start": "2025-03-10"
+  }
+}

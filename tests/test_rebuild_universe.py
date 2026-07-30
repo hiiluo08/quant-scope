@@ -47,7 +47,7 @@ def test_rebuild_saves_valid_complete_universe(tmp_path, monkeypatch):
 
     assert output.exists()
     assert set(result["symbol"].unique()) == set(UNIVERSE_TICKERS)
-    assert result.groupby("symbol")["date"].nunique().min() >= 504
+    assert result.groupby("symbol")["date"].nunique().min() >= 252
     assert result.duplicated(["date", "symbol"]).sum() == 0
 
 
@@ -63,11 +63,11 @@ def test_rebuild_rejects_missing_symbol(tmp_path, monkeypatch):
 
 
 def test_rebuild_rejects_insufficient_history(tmp_path, monkeypatch):
-    raw = _raw_frame(UNIVERSE_TICKERS, periods=300)
+    raw = _raw_frame(UNIVERSE_TICKERS, periods=200)
     monkeypatch.setattr(
         "data_pipeline.jobs.rebuild_universe.download_multiple_tickers",
         lambda symbols, start_date, end_date: raw,
     )
 
-    with pytest.raises(ValueError, match="at least 504 trading rows"):
+    with pytest.raises(ValueError, match="at least 252 trading rows"):
         rebuild_universe("2023-01-01", "2026-01-01", tmp_path / "output.parquet")

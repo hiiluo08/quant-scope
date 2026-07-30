@@ -17,7 +17,7 @@ def test_registry_rejects_unknown_factor(ohlcv_frame):
         FactorRegistry().compute("not_a_factor", ohlcv_frame)
 
 
-def test_default_registry_exposes_six_baseline_factors():
+def test_default_registry_exposes_baseline_factors():
     names = {item["name"] for item in build_default_registry().list_metadata()}
     assert names == {
         "momentum_20d",
@@ -26,6 +26,12 @@ def test_default_registry_exposes_six_baseline_factors():
         "rsi_14",
         "sma_ratio_20_50",
         "volume_zscore_20d",
+        "macd_12_26",
+        "macd_signal_12_26_9",
+        "bollinger_width_20",
+        "lag_return_1d",
+        "lag_return_2d",
+        "lag_return_3d",
     }
 
 

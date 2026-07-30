@@ -1,0 +1,60 @@
+{
+  "version": "2.0",
+  "universe_name": "quantscope_500",
+  "updated_at": "2026-07-30",
+  "total_symbols": 500,
+  "sectors": {
+    "ETFs": {
+      "description": "Broad market & sector ETFs",
+      "symbols": ["SPY", "QQQ", "DIA", "IWM", "IVV", "VTI", "VOO", "XLK", "XLF", "XLE", "XLV", "XLY", "XLP", "XLI", "XLB", "XLU", "XLRE", "XLC", "VGT", "VHT"]
+    },
+    "Technology": {
+      "description": "Information Technology",
+      "symbols": ["AAPL", "MSFT", "NVDA", "AVGO", "ORCL", "CRM", "AMD", "ADBE", "CSCO", "INTC", "QCOM", "TXN", "AMAT", "LRCX", "KLAC", "SNPS", "CDNS", "MRVL", "ADI", "NXPI", "MPWR", "FTNT", "PANW", "NOW", "PLTR", "CRWD", "DDOG", "SNOW", "NET", "MDB"]
+    },
+    "Communication": {
+      "description": "Communication Services",
+      "symbols": ["GOOGL", "META", "NFLX", "DIS", "CMCSA", "T", "VZ", "TMUS", "CHTR", "EA", "TTWO", "WBD", "PARA", "LYV", "MTCH", "ZM", "PINS", "SNAP", "RBLX", "SPOT"]
+    },
+    "Consumer_Discretionary": {
+      "description": "Consumer Discretionary",
+      "symbols": ["AMZN", "TSLA", "HD", "MCD", "NKE", "SBUX", "TGT", "LOW", "TJX", "BKNG", "MAR", "HLT", "CMG", "ROST", "DHI", "LEN", "PHM", "ORLY", "AZO", "POOL", "DECK", "LULU", "BBY", "DG", "DLTR", "EBAY", "ETSY", "W", "ABNB", "DASH"]
+    },
+    "Financials": {
+      "description": "Financial Services",
+      "symbols": ["JPM", "BAC", "GS", "MS", "WFC", "C", "BLK", "SCHW", "AXP", "V", "MA", "SPGI", "ICE", "CME", "MCO", "MSCI", "CB", "MMC", "AON", "AJG", "TRV", "PGR", "ALL", "MET", "PRU", "AIG", "BK", "STT", "USB", "PNC", "COF", "DFS", "SYF", "COIN", "HOOD"]
+    },
+    "Healthcare": {
+      "description": "Healthcare",
+      "symbols": ["JNJ", "UNH", "PFE", "ABBV", "MRK", "LLY", "TMO", "ABT", "BMY", "AMGN", "GILD", "VRTX", "REGN", "ISRG", "MDT", "SYK", "BSX", "EW", "ZTS", "DXCM", "IDXX", "IQV", "A", "DHR", "BDX", "BAX", "CI", "HUM", "ELV", "CNC"]
+    },
+    "Industrials": {
+      "description": "Industrials",
+      "symbols": ["CAT", "BA", "HON", "UNP", "RTX", "GE", "DE", "LMT", "GD", "NOC", "TDG", "ITW", "EMR", "ETN", "PH", "ROK", "CMI", "PCAR", "FDX", "UPS", "CSX", "NSC", "WM", "RSG", "VRSK", "CTAS", "FAST", "ODFL", "UBER", "AXON"]
+    },
+    "Energy": {
+      "description": "Energy",
+      "symbols": ["XOM", "CVX", "COP", "SLB", "EOG", "MPC", "PSX", "VLO", "OXY", "HAL", "DVN", "FANG", "HES", "KMI", "WMB", "OKE", "TRGP", "BKR", "APA", "EQT"]
+    },
+    "Consumer_Staples": {
+      "description": "Consumer Staples",
+      "symbols": ["PG", "KO", "PEP", "PM", "CL", "GIS", "KHC", "COST", "WMT", "MDLZ", "MO", "STZ", "HSY", "SJM", "K", "CAG", "CPB", "TSN", "HRL", "CLX"]
+    },
+    "Materials": {
+      "description": "Materials",
+      "symbols": ["LIN", "APD", "SHW", "ECL", "DD", "NEM", "FCX", "NUE", "STLD", "VMC", "MLM", "PPG", "ALB", "EMN", "CE", "RPM", "FMC", "IFF", "BALL", "PKG"]
+    },
+    "Real_Estate": {
+      "description": "Real Estate Investment Trusts",
+      "symbols": ["PLD", "AMT", "SPG", "CCI", "EQIX", "PSA", "DLR", "O", "WELL", "VICI", "ARE", "VTR", "EXR", "AVB", "EQR", "MAA", "UDR", "CPT", "ESS", "KIM"]
+    },
+    "Utilities": {
+      "description": "Utilities",
+      "symbols": ["NEE", "DUK", "SO", "D", "AEP", "SRE", "EXC", "XEL", "ED", "WEC", "ES", "AEE", "CMS", "DTE", "FE", "ETR", "CEG", "PEG", "AWK", "ATO"]
+    },
+    "Diversified_Mega": {
+      "description": "Additional large-cap diversified holdings",
+      "symbols": ["BRK-B", "ACN", "IBM", "FICO", "INTU", "ADP", "PAYX", "FI", "FIS", "GPN", "WTW", "TROW", "NDAQ", "MKTX", "CBOE", "TT", "CARR", "OTIS", "J", "LHX", "HII", "LDOS", "SAIC", "HEI", "TDY", "PAYC", "PCTY", "HUBS", "VEEV", "WDAY", "TEAM", "ANSS", "CPRT", "VRSN", "AKAM", "CDW", "KEYS", "TER", "SWKS", "MCHP", "ON", "GFS", "ENPH", "SEDG", "RUN", "FSLR", "PLUG", "RIVN", "LCID", "NIO"]
+    }
+  }
+}

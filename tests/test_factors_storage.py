@@ -34,13 +34,13 @@ def test_load_missing_factor_raises_file_not_found(tmp_path):
 from data_pipeline.jobs.rebuild_universe import compute_and_store_default_factors
 
 
-def test_default_factor_batch_writes_six_files(ohlcv_frame, tmp_path):
+def test_default_factor_batch_writes_files(ohlcv_frame, tmp_path):
     processed_path = tmp_path / "processed.parquet"
     ohlcv_frame.to_parquet(processed_path, index=False)
 
     paths = compute_and_store_default_factors(processed_path, factors_root=tmp_path / "factors")
 
-    assert len(paths) == 6
+    assert len(paths) == 12
     assert {path.parent.name for path in paths} == {
         "factor_name=momentum_20d",
         "factor_name=momentum_60d",
@@ -48,4 +48,10 @@ def test_default_factor_batch_writes_six_files(ohlcv_frame, tmp_path):
         "factor_name=rsi_14",
         "factor_name=sma_ratio_20_50",
         "factor_name=volume_zscore_20d",
+        "factor_name=macd_12_26",
+        "factor_name=macd_signal_12_26_9",
+        "factor_name=bollinger_width_20",
+        "factor_name=lag_return_1d",
+        "factor_name=lag_return_2d",
+        "factor_name=lag_return_3d",
     }

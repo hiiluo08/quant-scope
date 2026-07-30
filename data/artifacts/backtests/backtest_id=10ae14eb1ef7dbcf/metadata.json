@@ -1,0 +1,51 @@
+{
+  "backtest_id": "10ae14eb1ef7dbcf",
+  "benchmarks": {
+    "equal_weight_buy_and_hold": {
+      "annualized_volatility": 0.13804572099182671,
+      "average_exposure": 1.0,
+      "average_turnover": 0.0,
+      "cagr": 0.25384358561304765,
+      "calmar_ratio": 1.444926794688953,
+      "max_drawdown": -0.17567920156653483,
+      "sharpe_ratio": 1.708114190446078,
+      "total_return": 1.191456891391696,
+      "trading_days": 874,
+      "win_rate": 0.5640732265446224
+    },
+    "spy": {
+      "annualized_volatility": 0.15187486247354332,
+      "average_exposure": 1.0,
+      "average_turnover": 0.0,
+      "cagr": 0.23009142373977975,
+      "calmar_ratio": 1.2268112292470015,
+      "max_drawdown": -0.18755242718230292,
+      "sharpe_ratio": 1.4395793346072259,
+      "total_return": 1.0508113474580516,
+      "trading_days": 874,
+      "win_rate": 0.5697940503432495
+    }
+  },
+  "end_date": "2026-06-30",
+  "engine_version": "v1",
+  "factor_versions": {
+    "rsi_14": "v1"
+  },
+  "initial_equity": 1.0,
+  "metrics": {
+    "annualized_volatility": 0.2135298835964988,
+    "average_exposure": 0.8617886178861789,
+    "average_turnover": 0.11586037143506155,
+    "cagr": 0.1460510896721514,
+    "calmar_ratio": 0.8117607792702587,
+    "max_drawdown": -0.17991887930757833,
+    "sharpe_ratio": 0.7450847978592521,
+    "total_return": 0.5932365453528552,
+    "trading_days": 861,
+    "win_rate": 0.5377358490566038
+  },
+  "slippage_bps": 5.0,
+  "start_date": "2023-01-04",
+  "strategy_name": "rsi_mean_reversion_v1",
+  "transaction_cost_bps": 5.0
+}

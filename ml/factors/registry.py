@@ -3,10 +3,12 @@ from __future__ import annotations
 import pandas as pd
 
 from ml.factors.base import Factor
-from ml.factors.momentum import MomentumFactor
+from ml.factors.momentum import MomentumFactor, LaggedReturnFactor
 from ml.factors.technical import RSIFactor, SMARatioFactor
 from ml.factors.volatility import VolatilityFactor
 from ml.factors.volume import VolumeZScoreFactor
+from ml.factors.macd import MACDFactor, MACDSignalFactor
+from ml.factors.bollinger import BollingerWidthFactor
 from ml.factors.storage import build_factor_frame
 
 class FactorRegistry:
@@ -43,7 +45,13 @@ def build_default_registry() -> FactorRegistry:
         VolatilityFactor(20),
         RSIFactor(14),
         SMARatioFactor(20, 50),
-        VolumeZScoreFactor(20)
+        VolumeZScoreFactor(20),
+        MACDFactor(12, 26),
+        MACDSignalFactor(12, 26, 9),
+        BollingerWidthFactor(20),
+        LaggedReturnFactor(1),
+        LaggedReturnFactor(2),
+        LaggedReturnFactor(3),
     ):
         registry.register(factor)
         

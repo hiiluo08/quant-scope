@@ -14,7 +14,7 @@ def _seed_factor_storage(ohlcv_frame, root: Path) -> None:
 def test_list_factors_returns_default_metadata():
     response = TestClient(app).get("/api/v1/factors")
     assert response.status_code == 200
-    assert response.json()["count"] == 6
+    assert response.json()["count"] == 12
     assert {item["name"] for item in response.json()["factors"]} >= {"momentum_20d", "rsi_14"}
     
 def test_get_factor_values_filters_symbol_and_limit(ohlcv_frame, tmp_path, monkeypatch):

@@ -1,0 +1,59 @@
+{
+  "factor_versions": {
+    "momentum_20d": "v1",
+    "momentum_60d": "v1",
+    "rsi_14": "v1",
+    "sma_ratio_20_50": "v1",
+    "volatility_20d": "v1",
+    "volume_zscore_20d": "v1"
+  },
+  "family": "lightgbm",
+  "feature_columns": [
+    "momentum_20d",
+    "momentum_60d",
+    "volatility_20d",
+    "rsi_14",
+    "sma_ratio_20_50",
+    "volume_zscore_20d"
+  ],
+  "label": {
+    "horizon_days": 5,
+    "name": "forward_return_5d"
+  },
+  "metrics": {
+    "test": {
+      "directional_accuracy": 0.526954732510288,
+      "mae": 0.02772045434600335,
+      "rank_ic": 0.011645350822207327,
+      "rmse": 0.03718736321950351
+    },
+    "validation": {
+      "directional_accuracy": 0.6029723991507431,
+      "mae": 0.026922560387911118,
+      "rank_ic": 0.13476626216541718,
+      "rmse": 0.040633781961974834
+    }
+  },
+  "model_file": "model.txt",
+  "model_id": "ac4fb4aac1bdb2c0",
+  "parameters": {
+    "colsample_bytree": 0.8,
+    "device": "gpu",
+    "learning_rate": 0.02,
+    "n_estimators": 500,
+    "n_jobs": 1,
+    "num_leaves": 15,
+    "objective": "regression",
+    "random_state": 42,
+    "reg_lambda": 1.0,
+    "subsample": 0.8
+  },
+  "split_dates": {
+    "test_end": "2026-06-23",
+    "test_start": "2025-10-29",
+    "train_end": "2025-02-28",
+    "train_start": "2023-03-30",
+    "validation_end": "2025-10-21",
+    "validation_start": "2025-03-10"
+  }
+}
