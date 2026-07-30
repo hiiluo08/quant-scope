@@ -21,15 +21,31 @@ resource "aws_iam_role_policy_attachment" "s3_read_only" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "ecr_read_only" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${var.project_name}-ec2-profile"
   role = aws_iam_role.ec2_role.name
 }
 
+# Data source for latest Amazon Linux 2023 AMI
+data "aws_ami" "amazon_linux_2023" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-x86_64"]
+  }
+}
+
 # 2. Launch Template
 resource "aws_launch_template" "backend" {
   name_prefix   = "${var.project_name}-backend-lt"
-  image_id      = "ami-0b08bfc6ff7069aff" # Amazon Linux 2023 in ap-southeast-1 (Need to verify latest)
+  image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = "t3.micro"
 
   iam_instance_profile {
@@ -38,17 +54,11 @@ resource "aws_launch_template" "backend" {
 
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
-  # User data to run the FastAPI app via Docker
-  user_data = base64encode(<<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y docker
-              systemctl start docker
-              systemctl enable docker
-              # Pull and run docker container (assuming image in ECR or public hub)
-              # docker run -d -p 8000:8000 my-api-image:latest
-              EOF
-  )
+  # User data to run the FastAPI app via Docker from ECR
+  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    ecr_url = aws_ecr_repository.backend.repository_url
+    region  = var.aws_region
+  }))
 
   lifecycle {
     create_before_destroy = true
@@ -115,4 +125,12 @@ resource "aws_autoscaling_group" "backend" {
     value               = "${var.project_name}-backend-instance"
     propagate_at_launch = true
   }
+}
+
+output "aws_region" {
+  value = var.aws_region
+}
+
+output "asg_name" {
+  value = aws_autoscaling_group.backend.name
 }

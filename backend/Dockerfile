@@ -5,6 +5,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --default-timeout=1000 --retries=10 -r requirements.txt
 COPY backend ./backend
 COPY data_pipeline ./data_pipeline
+COPY data ./data
 COPY ml ./ml
 EXPOSE 8000
 CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]

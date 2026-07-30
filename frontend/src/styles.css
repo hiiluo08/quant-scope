@@ -51,26 +51,26 @@
   --amber-600: #d97706;
   --amber-700: #b45309;
 
-  /* ── Semantic Aliases ───────────────────────────────────── */
-  --surface: var(--gray-0);
-  --page-bg: var(--gray-50);
-  --ink: var(--gray-900);
-  --ink-secondary: var(--gray-800);
-  --text-body: var(--gray-600);
+  /* ── Semantic Aliases (Dark Mode) ───────────────────────── */
+  --surface: var(--gray-900);
+  --page-bg: #09090b; /* Zinc 950 */
+  --ink: var(--gray-50);
+  --ink-secondary: var(--gray-300);
+  --text-body: var(--gray-400);
   --text-muted: var(--gray-500);
-  --text-placeholder: var(--gray-400);
-  --border: var(--gray-200);
-  --border-light: var(--gray-100);
+  --text-placeholder: var(--gray-600);
+  --border: var(--gray-800);
+  --border-light: var(--gray-900);
   --border-focus: var(--blue-500);
 
-  --data-primary: var(--blue-500);
-  --data-secondary: var(--teal-500);
-  --data-tertiary: var(--violet-500);
-  --data-quaternary: var(--amber-500);
+  --data-primary: var(--blue-400);
+  --data-secondary: var(--teal-400);
+  --data-tertiary: var(--violet-400);
+  --data-quaternary: var(--amber-400);
 
-  --positive: var(--green-600);
-  --negative: var(--red-600);
-  --warning: var(--amber-600);
+  --positive: #10b981;
+  --negative: #ef4444;
+  --warning: #f59e0b;
 
   /* ── Tokens: Typography ─────────────────────────────────── */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,

@@ -10,12 +10,7 @@ app = FastAPI(title="QuantScope API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com",
-        "https://<api-id>.execute-api.ap-southeast-1.amazonaws.com",
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ],
+    allow_origins=["*"], # Allow all origins (handled by API Gateway as well)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
