@@ -1,35 +1,49 @@
 # QuantScope
 
-QuantScope is a quantitative trading research platform built with Python and machine learning.
+> Educational quantitative-research platform. Not investment advice.
 
-It is designed to progress from market data to factors, strategies, backtesting, and performance analysis.
+## Problem and outcome
 
-## What This Repository Contains
+QuantScope is an end-to-end quantitative trading research platform built for educational purposes. It solves the problem of organizing financial research by providing a unified pipeline to ingest market data, generate causal factors, backtest rule-based and ML strategies, and visualize results on a deployed web dashboard.
 
-- Market data ingestion and processing
-- Factor and label creation
-- Strategy development and backtesting
-- Future-return prediction model training
-- Result visualization through a dashboard and AWS deployment
+## Demo and screenshots
 
-## Repository Structure
+- **Live Dashboard:** [http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com](http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com)
+- **Live API Endpoint:** [http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health](http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health)
+- **Visual Evidence:** See [docs/screenshots/README.md](docs/screenshots/README.md) (To be finalized).
+- **Demo Script:** See [docs/final_demo_script.md](docs/final_demo_script.md) (To be finalized).
 
-- `backend/` - FastAPI backend and API routes
-- `frontend/` - React dashboard
-- `ml/` - Factor, label, backtesting, and model training code
-- `data_pipeline/` - Data ingestion, normalization, and S3 synchronization
-- `infra/` - AWS deployment notes and configuration
-- `scripts/` - Local development and maintenance helper scripts
-- `notebooks/` - Research and learning notebooks
-- `tests/` - Tests for the pipeline and core logic
-- `data/` - Local raw and processed data
-- `docs/` - Scope, plans, schemas, and reviews
+## Research flow
 
-## Main Documentation
+Market data → causal factors → rule-based backtest → leakage-controlled ML → dashboard → AWS deployment.
 
-- [Project Scope](docs/project_scope.md)
+## Features
 
-## Local Setup
+- **Market Data Ingestion:** Automated pipeline syncing OHLCV data to an S3 Data Lake.
+- **Factor Engine:** Extensible engine calculating causal factors (e.g., momentum, volatility).
+- **Rule-Based Backtesting:** Engine executing trades with configurable transaction costs and slippage.
+- **Machine Learning Lab:** Leakage-controlled time splits training LightGBM/XGBoost models for top-k asset ranking.
+- **Research Dashboard:** React + Vite SPA visualizing factors, backtests, and ML predictions.
+
+## Architecture
+
+The system utilizes a hybrid local/cloud architecture:
+- Data is periodically ingested via AWS EventBridge and Lambda to a private S3 bucket.
+- The backend API runs as a Docker container on an Amazon EC2 instance.
+- The frontend is compiled as a static Vite site and hosted on a public S3 bucket.
+- See detailed architecture documentation in [docs/architecture.md](docs/architecture.md) and [docs/deployment_aws.md](docs/deployment_aws.md).
+
+## Technology and AWS services
+
+- **Core Tech:** Python 3.12, FastAPI, Pandas, LightGBM, React, Vite, TypeScript, Docker.
+- **Testing:** Pytest, Vitest.
+- **AWS Services Used:**
+  - **S3:** Private data lake & Public static frontend hosting.
+  - **EC2 (t3.micro):** FastAPI backend container host.
+  - **Lambda & EventBridge:** Scheduled serverless data ingestion.
+  - **IAM & CloudWatch:** Least-privilege roles, instance profiles, and 7-day log retention.
+
+## Local setup
 
 ```bash
 python -m venv .venv
@@ -39,97 +53,54 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-python -m ipykernel install --user --name alphaforge
-jupyter notebook
+python -m ipykernel install --user --name quantscope
 ```
 
-## Progress
+## Verification commands
 
-### Week 1 — Quant Foundations and Repository Setup
+All deployment claims and functionality are verified through reproducible scripts:
+- Local tests: `pytest -q`
+- Frontend build: `cd frontend && npm run test && npm run build`
+- Docker verification: `docker build -f backend/Dockerfile -t quantscope-api:final .`
+- See full E2E checklist at [docs/e2e_checklist.md](docs/e2e_checklist.md).
+- See detailed execution records at [docs/week8_verification.md](docs/week8_verification.md).
 
-Status: Completed / In progress
+## Deployment and cost controls
 
-Deliverables:
+- Cloud deployment includes an AWS Budget alert ($20 / $50 / $100).
+- Automatic teardown and cost control runbook available via `./scripts/stop_ec2.sh`.
+- Review AWS deployment details at [docs/deployment_aws.md](docs/deployment_aws.md).
 
-- Project scope
-- Market data basics notebook
-- Quant notes
-- Data schema draft
+## Research limitations
 
-### Week 2 — Data Pipeline
+- **No Investment Advice:** Historical backtests and model predictions do not constitute investment advice.
+- **Data Bias:** Historical market data (via yfinance) inherently suffers from survivorship bias.
+- **Static Universe:** The current universe uses a static list of symbols, failing to account for index additions/deletions.
+- **Execution Model:** PnL is modeled assuming signal at $t$ and execution at $t+1$ with static transaction costs (5 bps) and slippage. Real-world execution may vary.
 
-Status: Core functionality is complete; the data universe still needs expansion.
+## Repository map
 
-Deliverables:
+- `backend/` - FastAPI backend and API routes
+- `frontend/` - React dashboard
+- `ml/` - Factor, label, backtesting, and model training code
+- `data_pipeline/` - Data ingestion, normalization, and S3 synchronization
+- `infra/` - AWS deployment scripts and IAM policies
+- `scripts/` - Local development and maintenance helper scripts
+- `tests/` - Pytest suites for pipeline and core logic
+- `docs/` - Scope, plans, reports, and architecture diagrams
 
-- Downloader: `data_pipeline/ingestion/download.py`
-- OHLCV normalization and Parquet I/O: `data_pipeline/processing/normalize.py`
-- S3 synchronization utility: `data_pipeline/storage/s3_client.py`
-- Market data API: `backend/app/api/routes_market_data.py`
-- [Data Quality Report](docs/data_quality_week2.md)
+## Roadmap/status
+
+**Status: QuantScope MVP Completed.**
+
+**Weekly Reviews & Reports:**
+- [Week 1 Review](docs/week1_review.md)
 - [Week 2 Review](docs/week2_review.md)
-
-Note: The current processed snapshot contains two tickers (`AAPL` and `SPY`); the Day 14 requirement of at least five tickers remains open.
-
-### Week 3 — Factor Engine
-
-Status: Completed.
-
-Deliverables:
-
-- Universe rebuild job: `data_pipeline/jobs/rebuild_universe.py`
-- Factor modules and registry: `ml/factors/`
-- Factor storage: `ml/factors/storage.py`
-- Factor API: `backend/app/api/routes_factors.py`
-- [Factor report](docs/factor_report_week3.md)
-- [Week 3 review](docs/week3_review.md)
-
-### Week 4 — Backtesting Engine
-
-Status: Completed.
-
-Deliverables:
-- Backtest contracts/engine/metrics: `ml/backtesting/`
-- Baseline strategies: `ml/strategies/`
-- Batch runner: `data_pipeline/jobs/run_backtests.py`
-- Result API: `backend/app/api/routes_backtests.py`
-- [Methodology](docs/backtest_methodology_week4.md)
-- [Backtest report](docs/backtest_report_week4.md)
-- [Week 4 review](docs/week4_review.md)
-
-### Week 5 — ML Alpha Prediction
-
-Status: Completed.
-
-Deliverables:
-- Labels and feature dataset: `ml/features/`
-- Time split/training/evaluation: `ml/training/`
-- Ranking strategy: `ml/strategies/ml_ranker.py`
-- Batch runner: `data_pipeline/jobs/run_ml_pipeline.py`
-- Model API: `backend/app/api/routes_models.py`
-- [Finance ML checklist](docs/finance_ml_checklist_week5.md)
-- [ML report](docs/ml_report_week5.md)
-- [Week 5 review](docs/week5_review.md)
-### Week 6 — Research Dashboard
-
-Status: Completed.
-
-Deliverables:
-- React + Vite Dashboard: `frontend/`
-- Component suite & UI charts: `frontend/src/components/`
-- Custom hooks & API service: `frontend/src/hooks/`, `frontend/src/services/`
-- [Dashboard demo report](docs/dashboard_demo_week6.md)
-- [Week 6 review](docs/week6_review.md)
-
-### Week 7 — AWS Cloud Deployment
-
-Status: Completed.
-
-Deliverables:
-- Docker containerization: `backend/Dockerfile`
-- EC2 User Data script: `infra/aws/ec2_user_data.sh`
-- IAM Least Privilege Policies: `infra/aws/iam_policies/`
-- Lambda Ingestion Handler: `data_pipeline/ingestion/lambda_handler.py`
-- EC2 Stop Runbook: `scripts/stop_ec2.sh`
-- [AWS Deployment Guide](docs/deployment_aws.md)
+- [Week 3 Review](docs/week3_review.md)
+- [Week 4 Review](docs/week4_review.md)
+- [Week 5 Review](docs/week5_review.md)
+- [Week 6 Review](docs/week6_review.md)
 - [Week 7 Review](docs/week7_review.md)
+
+**Final Artifacts:**
+- [Final Technical Report](docs/final_report.md) (To be finalized).
