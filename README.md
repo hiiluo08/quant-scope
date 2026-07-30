@@ -110,6 +110,26 @@ Deliverables:
 - [Finance ML checklist](docs/finance_ml_checklist_week5.md)
 - [ML report](docs/ml_report_week5.md)
 - [Week 5 review](docs/week5_review.md)
+### Week 6 — Research Dashboard
 
+Status: Completed.
 
+Deliverables:
+- React + Vite Dashboard: `frontend/`
+- Component suite & UI charts: `frontend/src/components/`
+- Custom hooks & API service: `frontend/src/hooks/`, `frontend/src/services/`
+- [Dashboard demo report](docs/dashboard_demo_week6.md)
+- [Week 6 review](docs/week6_review.md)
 
+### Week 7 — AWS Cloud Deployment
+
+Status: Completed.
+
+Deliverables:
+- Docker containerization: `backend/Dockerfile`
+- EC2 User Data script: `infra/aws/ec2_user_data.sh`
+- IAM Least Privilege Policies: `infra/aws/iam_policies/`
+- Lambda Ingestion Handler: `data_pipeline/ingestion/lambda_handler.py`
+- EC2 Stop Runbook: `scripts/stop_ec2.sh`
+- [AWS Deployment Guide](docs/deployment_aws.md)
+- [Week 7 Review](docs/week7_review.md)
