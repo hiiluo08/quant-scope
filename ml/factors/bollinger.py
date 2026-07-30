@@ -32,4 +32,7 @@ class BollingerWidthFactor(Factor):
             lower = sma - self.num_std * std
             return (upper - lower) / sma
 
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_bb_width)
+        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_bb_width)
+        res.name = self.name
+        return res
+

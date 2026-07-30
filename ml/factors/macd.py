@@ -30,7 +30,9 @@ class MACDFactor(Factor):
             ema_slow = prices.ewm(span=self.slow, adjust=False, min_periods=self.slow).mean()
             return ema_fast - ema_slow
 
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_macd)
+        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_macd)
+        res.name = self.name
+        return res
 
 
 class MACDSignalFactor(Factor):
@@ -60,4 +62,7 @@ class MACDSignalFactor(Factor):
             macd_line = ema_fast - ema_slow
             return macd_line.ewm(span=self.signal, adjust=False, min_periods=self.signal).mean()
 
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_signal)
+        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_signal)
+        res.name = self.name
+        return res
+
