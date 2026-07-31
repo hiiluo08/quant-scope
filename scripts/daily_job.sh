@@ -24,5 +24,10 @@ python -m data_pipeline.jobs.run_backtests
 echo "[Daily Job] Running ML Inference..."
 python -m data_pipeline.jobs.run_ml_inference
 
+if [ "$APP_ENV" == "production" ]; then
+    echo "[Daily Job] Uploading data to S3 Data Lake..."
+    python scripts/sync_s3.py
+fi
+
 echo "[Daily Job] Done!"
 

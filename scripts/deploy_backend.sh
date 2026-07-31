@@ -25,5 +25,5 @@ docker push $REPO_URL:latest
 echo "Successfully pushed to ECR!"
 
 echo "Updating AWS Lambda to use the latest image..."
-aws lambda update-function-code --function-name quantscope-backend-api --image-uri $REPO_URL:latest --region $REGION > /dev/null
+aws lambda update-function-code --function-name quantscope-backend-api --image-uri $REPO_URL:latest --region $REGION > /dev/null || echo "Note: Lambda function might not exist yet. Terraform will create it."
 echo "Deployment completed!"

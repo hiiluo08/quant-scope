@@ -6,12 +6,11 @@ from typing import Optional
 from backend.app.core.config import settings
 
 router = APIRouter(prefix="/market-data", tags=["market_data"])
-PROCESSED_PATH = Path(settings.processed_file)
-
 def load_data() -> pd.DataFrame:
-    if not PROCESSED_PATH.exists():
+    path = Path(settings.processed_file)
+    if not path.exists():
         raise HTTPException(status_code=503, detail="Processed data not found. Run data pipeline first.")
-    return pd.read_parquet(PROCESSED_PATH)
+    return pd.read_parquet(path)
 
 @router.get("/symbols")
 def get_symbols():

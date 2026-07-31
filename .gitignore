@@ -13,6 +13,7 @@ venv/
 # Data
 /data/raw/
 /data/processed/
+/data/artifacts/
 *.parquet
 *.csv
 *.sqlite
@@ -26,10 +27,7 @@ build/
 # OS / IDE
 .DS_Store
 .vscode/
-
 .claude/
-
-
 
 # Local planning docs
 docs/QUANTSCOPE_8_WEEK_PLAN.md
@@ -41,6 +39,7 @@ docs/QUANTSCOPE_WEEK_5_DETAILED_PLAN.md
 docs/QUANTSCOPE_WEEK_6_DETAILED_PLAN.md
 docs/QUANTSCOPE_WEEK_7_DETAILED_PLAN.md
 docs/QUANTSCOPE_WEEK_8_DETAILED_PLAN.md
+docs/FCJ_POST_WEEK8_SUBMISSION_PLAN.md
 
 # Test and lint caches
 .pytest_cache/
