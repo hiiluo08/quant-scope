@@ -1,17 +1,11 @@
-export function MetricCard({ label, value }: { label: string; value: string }) {
-  let valueClass = 'metric-value'
-  if (value === '—' || value === 'Not available') {
-    valueClass += ' muted'
-  } else if (value.startsWith('-')) {
-    valueClass += ' negative'
-  } else if (value.includes('%')) {
-    valueClass += ' positive'
-  }
 
-  return (
-    <div className="metric-card" aria-label={label}>
-      <span className="metric-label">{label}</span>
-      <span className={valueClass}>{value}</span>
-    </div>
-  )
+import { Metric } from './ui/Metric'
+
+export function MetricCard({ label, value }: { label: string; value: string }) {
+  let tone: 'neutral' | 'positive' | 'negative' | 'muted' = 'neutral'
+  if (value === '—' || value === 'Not available') tone = 'muted'
+  else if (value.startsWith('-')) tone = 'negative'
+  else if (value.includes('%')) tone = 'positive'
+
+  return <Metric label={label} value={value} tone={tone} />
 }

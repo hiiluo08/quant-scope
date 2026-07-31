@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { MarketDataPage } from './MarketDataPage'
 import * as queries from '../api/queries'
 
@@ -15,7 +16,7 @@ describe('MarketDataPage', () => {
 
     it('renders loading state initially', () => {
         vi.mocked(queries.getSymbols).mockReturnValue(new Promise(() => {}))
-        render(<MarketDataPage />)
+        render(<MemoryRouter><MarketDataPage /></MemoryRouter>)
         expect(screen.getByRole('status')).toHaveTextContent(/loading research data/i)
     })
 
@@ -27,19 +28,19 @@ describe('MarketDataPage', () => {
             data: [{ date: '2026-01-01', open: 100, high: 105, low: 99, close: 104, adjusted_close: 104, volume: 1000000 }],
         })
 
-        render(<MarketDataPage />)
+        render(<MemoryRouter><MarketDataPage /></MemoryRouter>)
 
         await waitFor(() => {
-            expect(screen.getByLabelText('Symbol')).toBeInTheDocument()
-            expect(screen.getByText(/SPY — Adjusted Close Price/i)).toBeInTheDocument()
-            expect(screen.getByText(/SPY — Trading Volume/i)).toBeInTheDocument()
-            expect(screen.getByText(/Recent 100 sessions for SPY/i)).toBeInTheDocument()
+            expect(screen.getByPlaceholderText('Search symbols...')).toBeInTheDocument()
+            expect(screen.getByText(/SPY Price/i)).toBeInTheDocument()
+            expect(screen.getByText(/SPY Volume/i)).toBeInTheDocument()
+            expect(screen.getByText(/Recent sessions for SPY/i)).toBeInTheDocument()
         })
     })
 
     it('renders error state and handles retry', async () => {
         vi.mocked(queries.getSymbols).mockRejectedValue(new Error('Network error'))
-        render(<MarketDataPage />)
+        render(<MemoryRouter><MarketDataPage /></MemoryRouter>)
 
         await waitFor(() => {
             expect(screen.getByRole('alert')).toBeInTheDocument()

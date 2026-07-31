@@ -4,7 +4,13 @@ import { useApi } from '../hooks/useApi'
 import { AsyncState } from '../components/AsyncState'
 import { DataTable, type Column } from '../components/DataTable'
 import { ResearchNotice } from '../components/ResearchNotice'
+import { Panel } from '../components/ui/Panel'
+import { Metric } from '../components/ui/Metric'
+import { DataFreshness } from '../components/ui/DataFreshness'
+import { SegmentedControl } from '../components/ui/SegmentedControl'
+import { DetailsDrawer } from '../components/ui/DetailsDrawer'
 import type { ModelManifest, PredictionRow, PredictionSplit } from '../api/types'
+import { formatDate } from '../lib/formatters'
 
 const formatMetric = (value: number | null | undefined) => (
   value === null || value === undefined || !Number.isFinite(value)
@@ -37,119 +43,103 @@ export const MLLabPage: React.FC = () => {
   )
 
   const columns: Column<PredictionRow>[] = [
-    { key: 'date', header: 'Date', render: (row) => row.date },
-    { key: 'symbol', header: 'Symbol', render: (row) => row.symbol },
-    { key: 'prediction', header: 'Prediction', render: (row) => formatMetric(row.prediction) },
-    { key: 'forward_return_5d', header: 'Forward return (5d)', render: (row) => formatMetric(row.forward_return_5d) },
+    { key: 'date', header: 'Date', render: (row) => formatDate(row.date), sortValue: (row) => row.date },
+    { key: 'symbol', header: 'Symbol', render: (row) => <span style={{ fontWeight: 600 }}>{row.symbol}</span>, sortValue: row => row.symbol },
+    { key: 'prediction', header: 'Prediction', render: (row) => formatMetric(row.prediction), align: 'end', sortValue: row => row.prediction },
+    { key: 'forward_return_5d', header: 'Forward return (5d)', render: (row) => formatMetric(row.forward_return_5d), align: 'end', sortValue: row => row.forward_return_5d },
   ]
 
+  const latestDate = predictionsState.status === 'success' && predictionsState.data.data.length > 0
+    ? predictionsState.data.data.reduce((max, p) => p.date > max ? p.date : max, predictionsState.data.data[0].date)
+    : undefined
+
   return (
-    <div className="stack page-enter">
+    <div className="stack page-enter" style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
       <ResearchNotice message="ML Lab is research-only: validation/test metrics and predictions are not proven alpha, trading recommendations or a promise of profitability." />
-      <section className="card">
-        <h1 className="card-title">ML Lab</h1>
-        <AsyncState state={modelsState} emptyMessage="Run the model training pipeline before using this page.">
+      
+      <Panel title="ML Lab">
+        <AsyncState state={modelsState} emptyMessage="Run the model training pipeline before using this page." variant="panel">
           {(models) => models.count === 0 ? (
             <div className="async-empty">
               <h2>No persisted model manifest</h2>
               <p>Run the model artifact job, then retry.</p>
-              <button type="button" onClick={modelsState.retry}>Retry</button>
+              <button type="button" onClick={modelsState.retry} className="btn btn-outline">Retry</button>
             </div>
           ) : (
-            <div className="controls">
-              <div className="control-group">
-                <label htmlFor="model-select" className="control-label">Model</label>
-                <select
-                  id="model-select"
-                  value={modelId}
-                  onChange={(event) => setModelId(event.target.value)}
-                >
-                  {models.models.map((model) => (
-                    <option key={model.model_id} value={model.model_id}>
-                      {model.model_id} — {model.family}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="control-group">
-                <label htmlFor="split-select" className="control-label">Prediction split</label>
-                <select
-                  id="split-select"
-                  value={split}
-                  onChange={(event) => setSplit(event.target.value as PredictionSplit)}
-                >
-                  <option value="test">test</option>
-                  <option value="validation">validation</option>
-                </select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '250px' }}>
+                  <label htmlFor="model-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Model</label>
+                  <select
+                    id="model-select"
+                    value={modelId}
+                    onChange={(event) => setModelId(event.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
+                  >
+                    {models.models.map((model) => (
+                      <option key={model.model_id} value={model.model_id}>
+                        {model.model_id} — {model.family}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ minWidth: '200px' }}>
+                  <SegmentedControl
+                    label="Prediction split"
+                    options={['validation', 'test']}
+                    value={split}
+                    onChange={(val) => setSplit(val as PredictionSplit)}
+                  />
+                </div>
               </div>
             </div>
           )}
         </AsyncState>
-      </section>
+      </Panel>
 
       {modelId && (
-        <AsyncState state={manifestState}>
+        <AsyncState state={manifestState} variant="panel">
           {(manifest: ModelManifest) => (
-            <section className="card stack-sm">
-              <h2 className="card-title">{manifest.family} · {manifest.model_id}</h2>
-              
-              <div className="kv-grid">
-                <span className="kv-key">Model file</span>
-                <span className="kv-value">{manifest.model_file}</span>
-                <span className="kv-key">Family</span>
-                <span className="kv-value">{manifest.family}</span>
-                <span className="kv-key">Label</span>
-                <span className="kv-value">{manifest.label.name} · {manifest.label.horizon_days}d horizon</span>
-                <span className="kv-key">Features</span>
-                <span className="kv-value"><code>{manifest.feature_columns.join(', ')}</code></span>
-                <span className="kv-key">Factor versions</span>
-                <span className="kv-value"><code>{Object.entries(manifest.factor_versions).map(([k,v]) => `${k}: ${v}`).join(', ')}</code></span>
-                <span className="kv-key">Split dates</span>
-                <span className="kv-value"><code>{Object.entries(manifest.split_dates).map(([k,v]) => `${k}: ${v}`).join(', ')}</code></span>
-                <span className="kv-key">Parameters</span>
-                <span className="kv-value"><code>{Object.entries(manifest.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</code></span>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <Panel title={`${manifest.family} · ${manifest.model_id}`}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                  <Metric label="Spearman IC" value={formatMetric(manifest.metrics[split]?.spearman_ic)} />
+                  <Metric label="RMSE" value={formatMetric(manifest.metrics[split]?.rmse)} />
+                  <Metric label="Hit Rate" value={manifest.metrics[split]?.hit_rate !== undefined ? `${(manifest.metrics[split].hit_rate! * 100).toFixed(1)}%` : '—'} />
+                  <Metric label="Coverage" value={manifest.metrics[split]?.coverage !== undefined ? `${(manifest.metrics[split].coverage! * 100).toFixed(1)}%` : '—'} />
+                </div>
 
-              <div className="comparison-grid">
-                <section className="comparison-column">
-                  <h3 className="comparison-column-title">Validation metrics</h3>
-                  <div className="kv-grid">
-                    {Object.entries(manifest.metrics.validation).map(([key, value]) => (
-                      <React.Fragment key={key}>
-                        <span className="kv-key">{key}</span>
-                        <span className="kv-value">{formatMetric(value)}</span>
-                      </React.Fragment>
-                    ))}
+                <DetailsDrawer title="Model Metadata & Parameters">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Model file</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.model_file}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Family</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.family}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Label</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.label.name} · {manifest.label.horizon_days}d horizon</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Features</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{manifest.feature_columns.join(', ')}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Factor versions</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.factor_versions).map(([k,v]) => `${k}: ${v}`).join(', ')}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Split dates</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.split_dates).map(([k,v]) => `${k}: ${v}`).join(', ')}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Parameters</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</div></div>
                   </div>
-                </section>
-                <section className="comparison-column">
-                  <h3 className="comparison-column-title">Held-out test metrics</h3>
-                  <div className="kv-grid">
-                    {Object.entries(manifest.metrics.test).map(([key, value]) => (
-                      <React.Fragment key={key}>
-                        <span className="kv-key">{key}</span>
-                        <span className="kv-value">{formatMetric(value)}</span>
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </section>
-              </div>
-            </section>
+                </DetailsDrawer>
+              </Panel>
+            </div>
           )}
         </AsyncState>
       )}
 
       {modelId && (
-        <AsyncState state={predictionsState}>
+        <AsyncState state={predictionsState} variant="panel">
           {(response) => (
-            <div className="card">
+            <Panel title={`Predictions for ${response.model_id} — ${response.split}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
               <DataTable
-                caption={`Predictions for ${response.model_id} — ${response.split}`}
+                caption=""
                 columns={columns}
                 data={response.data}
                 getRowKey={(row) => `${row.date}-${row.symbol}`}
+                pageSize={20}
+                initialSortKey="date"
+                initialSortAsc={false}
               />
-            </div>
+            </Panel>
           )}
         </AsyncState>
       )}

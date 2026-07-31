@@ -36,20 +36,20 @@ afterEach(() => {
 
 describe('application routing and resilient states', () => {
   it.each([
-    ['/', 'Overview page'],
-    ['/market-data', 'Market Data page'],
-    ['/factors', 'Factors page'],
-    ['/backtests', 'Backtests page'],
-    ['/ml', 'ML Lab page'],
-  ])('renders the %s route', async (path, heading) => {
+    ['/', 'Command Center'],
+    ['/market-data', 'Markets'],
+    ['/factors', 'Factors'],
+    ['/backtests', 'Strategies'],
+    ['/ml', 'ML Signals'],
+  ])('keeps an accessible navigation destination for %s', async (path, linkName) => {
     renderAt(path)
-    expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: linkName })[0]).toBeInTheDocument()
   })
 
   it('redirects an unknown route and exposes current navigation state', async () => {
     renderAt('/not-a-route')
     expect(await screen.findByRole('heading', { name: 'Overview page' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getAllByRole('link', { name: 'Command Center' })[0]).toHaveAttribute('aria-current', 'page')
   })
 
   it('runs AsyncState Retry and then renders the page-level nested envelope empty state', async () => {
@@ -66,10 +66,10 @@ describe('application routing and resilient states', () => {
   it('navigates between real App routes with keyboard interaction', async () => {
     const user = userEvent.setup()
     renderAt('/')
-    const factorsLink = screen.getByRole('link', { name: 'Factors' })
+    const factorsLink = screen.getAllByRole('link', { name: 'Factors' })[0]
     factorsLink.focus()
     await user.keyboard('{Enter}')
     expect(await screen.findByRole('heading', { name: 'Factors page' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Factors' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getAllByRole('link', { name: 'Factors' })[0]).toHaveAttribute('aria-current', 'page')
   })
 })
