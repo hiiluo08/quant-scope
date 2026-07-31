@@ -10,7 +10,7 @@ import { DataFreshness } from '../components/ui/DataFreshness'
 import { SegmentedControl } from '../components/ui/SegmentedControl'
 import { DetailsDrawer } from '../components/ui/DetailsDrawer'
 import type { ModelManifest, PredictionRow, PredictionSplit } from '../api/types'
-import { formatDate } from '../lib/formatters'
+import { formatDate, formatFactorName } from '../lib/formatters'
 
 const formatMetric = (value: number | null | undefined) => (
   value === null || value === undefined || !Number.isFinite(value)
@@ -69,19 +69,15 @@ export const MLLabPage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '250px' }}>
-                  <label htmlFor="model-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Model</label>
-                  <select
-                    id="model-select"
-                    value={modelId}
-                    onChange={(event) => setModelId(event.target.value)}
-                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
-                  >
-                    {models.models.map((model) => (
-                      <option key={model.model_id} value={model.model_id}>
-                        {model.model_id} — {model.family}
-                      </option>
-                    ))}
-                  </select>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                    Latest Model
+                  </div>
+                  <div style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}>
+                    <span style={{ fontWeight: 600 }}>{String(models.models[0]?.family || '').toUpperCase()}</span>
+                    <span style={{ color: 'var(--text-secondary)', marginLeft: '8px' }}>
+                      (Updated: {models.models[0]?.split_dates?.test_end})
+                    </span>
+                  </div>
                 </div>
                 <div style={{ minWidth: '200px' }}>
                   <SegmentedControl
@@ -101,7 +97,7 @@ export const MLLabPage: React.FC = () => {
         <AsyncState state={manifestState} variant="panel">
           {(manifest: ModelManifest) => (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <Panel title={`${manifest.family} · ${manifest.model_id}`}>
+              <Panel title={`Model: ${String(manifest.family || '').toUpperCase()}`}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                   <Metric label="Spearman IC" value={formatMetric(manifest.metrics[split]?.spearman_ic)} />
                   <Metric label="RMSE" value={formatMetric(manifest.metrics[split]?.rmse)} />
@@ -114,8 +110,8 @@ export const MLLabPage: React.FC = () => {
                     <div><div style={{ color: 'var(--text-secondary)' }}>Model file</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.model_file}</div></div>
                     <div><div style={{ color: 'var(--text-secondary)' }}>Family</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.family}</div></div>
                     <div><div style={{ color: 'var(--text-secondary)' }}>Label</div><div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{manifest.label.name} · {manifest.label.horizon_days}d horizon</div></div>
-                    <div><div style={{ color: 'var(--text-secondary)' }}>Features</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{manifest.feature_columns.join(', ')}</div></div>
-                    <div><div style={{ color: 'var(--text-secondary)' }}>Factor versions</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.factor_versions).map(([k,v]) => `${k}: ${v}`).join(', ')}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Features</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{manifest.feature_columns.map(formatFactorName).join(', ')}</div></div>
+                    <div><div style={{ color: 'var(--text-secondary)' }}>Factor versions</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.factor_versions).map(([k,v]) => `${formatFactorName(k)}: ${v}`).join(', ')}</div></div>
                     <div><div style={{ color: 'var(--text-secondary)' }}>Split dates</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.split_dates).map(([k,v]) => `${k}: ${v}`).join(', ')}</div></div>
                     <div><div style={{ color: 'var(--text-secondary)' }}>Parameters</div><div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>{Object.entries(manifest.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</div></div>
                   </div>
@@ -129,7 +125,7 @@ export const MLLabPage: React.FC = () => {
       {modelId && (
         <AsyncState state={predictionsState} variant="panel">
           {(response) => (
-            <Panel title={`Predictions for ${response.model_id} — ${response.split}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
+            <Panel title={`Predictions for ${String(response.model_id || '').substring(0,8)} — ${response.split}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
               <DataTable
                 caption=""
                 columns={columns}

@@ -26,8 +26,10 @@ def _prediction_frame(model: object, frame: pd.DataFrame, features: tuple[str, .
     return result
 
 def train_model_family(family: str, split: TemporalSplit, features: tuple[str, ...]) -> TrainedModel:
-    X_train, y_train = split.train.loc[:, features], split.train[TARGET_COLUMN]
-    X_validation, y_validation = split.validation.loc[:, features], split.validation[TARGET_COLUMN]
+    train_valid = split.train.dropna(subset=[TARGET_COLUMN])
+    val_valid = split.validation.dropna(subset=[TARGET_COLUMN])
+    X_train, y_train = train_valid.loc[:, features], train_valid[TARGET_COLUMN]
+    X_validation, y_validation = val_valid.loc[:, features], val_valid[TARGET_COLUMN]
     
     if family == "xgboost":
         parameters = {

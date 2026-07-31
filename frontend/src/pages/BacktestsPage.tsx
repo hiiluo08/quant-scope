@@ -61,19 +61,15 @@ export const BacktestsPage: React.FC = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label htmlFor="backtest-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Backtest artifact</label>
-              <select
-                id="backtest-select"
-                value={backtestId}
-                onChange={(event) => setBacktestId(event.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)', maxWidth: '400px' }}
-              >
-                {list.backtests.map((item) => (
-                  <option key={item.backtest_id} value={item.backtest_id}>
-                    {item.strategy_name} — {item.backtest_id}
-                  </option>
-                ))}
-              </select>
+              <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                Latest Backtest
+              </div>
+              <div style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)', maxWidth: '400px' }}>
+                <span style={{ fontWeight: 600 }}>{String(list.backtests[0]?.strategy_name || '').replace(/_/g, ' ').toUpperCase()}</span>
+                <span style={{ color: 'var(--text-secondary)', marginLeft: '8px' }}>
+                  (Updated: {list.backtests[0]?.end_date})
+                </span>
+              </div>
             </div>
           )}
         </AsyncState>
@@ -82,7 +78,7 @@ export const BacktestsPage: React.FC = () => {
       {backtestId && (
         <AsyncState state={metadataState} variant="panel">
           {(metadata: BacktestMetadata) => (
-            <Panel title={metadata.strategy_name}>
+            <Panel title={String(metadata.strategy_name || '').replace(/_/g, ' ').toUpperCase()}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                 <Metric label="Total return" value={formatPercent(metadata.metrics.total_return)} tone={metadata.metrics.total_return && metadata.metrics.total_return > 0 ? 'positive' : 'negative'} />
                 <Metric label="CAGR" value={formatPercent(metadata.metrics.cagr)} tone={metadata.metrics.cagr && metadata.metrics.cagr > 0 ? 'positive' : 'negative'} />

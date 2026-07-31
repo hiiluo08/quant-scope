@@ -9,7 +9,7 @@ import { Panel } from '../components/ui/Panel'
 import { DetailsDrawer } from '../components/ui/DetailsDrawer'
 import { DataFreshness } from '../components/ui/DataFreshness'
 import type { FactorMetadata, FactorValue } from '../api/types'
-import { formatDate } from '../lib/formatters'
+import { formatDate, formatFactorName } from '../lib/formatters'
 
 const formatFactorValue = (value: number | null) =>
   value === null || !Number.isFinite(value) ? 'N/A' : value.toFixed(6)
@@ -96,24 +96,46 @@ export const FactorsPage: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '200px' }}>
-                  <label htmlFor="factor-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Factor</label>
+                  <label htmlFor="factor-select" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Factor</label>
                   <select 
                     id="factor-select" 
                     value={factorName} 
                     onChange={(event) => setFactorName(event.target.value)}
-                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
+                    style={{ 
+                      padding: '12px 16px', 
+                      borderRadius: '12px', 
+                      border: '1px solid var(--border-subtle)', 
+                      background: 'var(--surface-2)', 
+                      color: 'var(--text-primary)',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                      transition: 'border-color 0.2s',
+                    }}
                   >
-                    {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{factor.name}</option>)}
+                    {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{formatFactorName(factor.name)}</option>)}
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '200px' }}>
-                  <label htmlFor="factor-symbol-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Symbol</label>
+                  <label htmlFor="factor-symbol-select" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Symbol</label>
                   <select 
                     id="factor-symbol-select" 
                     value={symbol} 
                     onChange={(event) => setSymbol(event.target.value)} 
                     disabled={symbols.length === 0}
-                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
+                    style={{ 
+                      padding: '12px 16px', 
+                      borderRadius: '12px', 
+                      border: '1px solid var(--border-subtle)', 
+                      background: 'var(--surface-2)', 
+                      color: 'var(--text-primary)',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                      transition: 'border-color 0.2s',
+                    }}
                   >
                     {symbols.map((item) => <option key={item} value={item}>{item}</option>)}
                   </select>
@@ -153,18 +175,18 @@ export const FactorsPage: React.FC = () => {
 
       {factorName && symbol && <AsyncState state={seriesState} variant="panel">
         {(response) => (
-          <Panel title={`${response.factor_name} — ${symbol} factor value`}>
+          <Panel title={`${formatFactorName(response.factor_name)} — ${symbol} factor value`}>
             <div style={{ height: '300px', marginBottom: '24px' }}>
               <LineSeriesChart title="" data={chartRows} dataKey="factor_value" />
             </div>
-            <DataTable caption={`Time-series values for ${response.factor_name} — ${symbol}`} columns={seriesColumns} data={response.data} getRowKey={(row) => `${row.date}-${row.symbol}`} pageSize={10} initialSortKey="date" initialSortAsc={false} />
+            <DataTable caption={`Time-series values for ${formatFactorName(response.factor_name)} — ${symbol}`} columns={seriesColumns} data={response.data} getRowKey={(row) => `${row.date}-${row.symbol}`} pageSize={10} initialSortKey="date" initialSortAsc={false} />
           </Panel>
         )}
       </AsyncState>}
 
       {factorName && <AsyncState state={latestState} variant="panel">
         {(response) => (
-          <Panel title={`Latest values for ${response.factor_name}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
+          <Panel title={`Latest values for ${formatFactorName(response.factor_name)}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
             <DataTable caption="" columns={latestColumns} data={latestRows} getRowKey={(row) => row.symbol} pageSize={10} />
           </Panel>
         )}

@@ -22,6 +22,7 @@ def list_models() -> dict[str, object]:
     if root.exists():
         for path in sorted(root.glob("model_id=*/manifest.json")):
             manifests.append(__import__("json").loads(path.read_text(encoding="utf-8")))
+    manifests.sort(key=lambda x: x.get("split_dates", {}).get("test_end", ""), reverse=True)
     return {"models": manifests, "count": len(manifests)}
 
 @router.get("/{model_id}")

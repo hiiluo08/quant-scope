@@ -41,6 +41,6 @@ def build_feature_dataset(labels: pd.DataFrame, factors_root: Path = FACTORS_DIR
         features = features.merge(frame, on=["date", "symbol"], how="outer", validate="one_to_one")
     
     dataset = features.merge(labels, on=["date", "symbol"], how="inner", validate="one_to_one")
-    dataset = dataset.dropna(subset=[*FEATURE_COLUMNS, TARGET_COLUMNS])
+    dataset = dataset.dropna(subset=list(FEATURE_COLUMNS))
     dataset = dataset.sort_values(["date", "symbol"]).reset_index(drop=True)
     return dataset[["date", "symbol", *FEATURE_COLUMNS, TARGET_COLUMNS]], versions

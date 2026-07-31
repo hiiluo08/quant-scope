@@ -17,7 +17,7 @@ interface AppShellProps {
 }
 
 const navigation = [
-  { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
+  { to: '/', label: 'Home', icon: LayoutDashboard, end: true },
   { to: '/market-data', label: 'Markets', icon: BarChart2 },
   { to: '/factors', label: 'Factors', icon: Layers },
   { to: '/backtests', label: 'Strategies', icon: LineChart },
@@ -105,9 +105,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         {/* Header */}
         <header className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button aria-label="Search ticker or command" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-2)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-              <Search size={16} /> Search
-            </button>
+
             <div className="status-badge">Research workspace</div>
           </div>
           

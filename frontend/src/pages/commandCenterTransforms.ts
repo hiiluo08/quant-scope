@@ -66,11 +66,27 @@ export function deriveFactorLeaders(factorValues: FactorResponse | undefined): F
     }))
 }
 
+export function deriveFactorLaggards(factorValues: FactorResponse | undefined): FactorLeader[] {
+  if (!factorValues || !factorValues.data || factorValues.data.length === 0) return []
+  const latestDate = factorValues.data.reduce((max, d) => d.date > max ? d.date : max, factorValues.data[0].date)
+  const latest = factorValues.data.filter(d => d.date === latestDate && d.factor_value !== null)
+  return latest
+    .sort((a, b) => a.factor_value! - b.factor_value!)
+    .slice(0, 5)
+    .map(d => ({
+      symbol: d.symbol,
+      factor_value: d.factor_value!
+    }))
+}
+
 export interface CommandCenterInputs {
   backtest?: BacktestMetadata
   daily?: DailyBacktestRow[]
   model?: ModelManifest
   predictions?: PredictionRow[]
-  factor?: FactorMetadata
-  latestFactors?: FactorResponse
+  factors?: {
+    momentum_20d?: FactorResponse
+    rsi_14?: FactorResponse
+    volatility_20d?: FactorResponse
+  }
 }

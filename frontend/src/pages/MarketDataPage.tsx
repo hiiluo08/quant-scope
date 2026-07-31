@@ -96,7 +96,7 @@ export const MarketDataPage: React.FC = () => {
 					{(marketData) => {
 						const allRows = marketData.data || []
 						const filteredRows = filterDataByTimeRange(allRows)
-						const tableRows = [...filteredRows].slice(-100)
+						const tableRows = [...filteredRows]
 						
 						const latestRow = filteredRows[filteredRows.length - 1]
 						const prevRow = filteredRows[filteredRows.length - 2]

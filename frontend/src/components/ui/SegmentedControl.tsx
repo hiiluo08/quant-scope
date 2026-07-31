@@ -5,9 +5,10 @@ export interface SegmentedControlProps<T extends string> {
   value: T
   options: readonly T[]
   onChange: (value: T) => void
+  formatOption?: (value: T) => string
 }
 
-export function SegmentedControl<T extends string>({ label, value, options, onChange }: SegmentedControlProps<T>) {
+export function SegmentedControl<T extends string>({ label, value, options, onChange, formatOption }: SegmentedControlProps<T>) {
   return (
     <div role="group" aria-label={label} style={{ display: 'inline-flex', backgroundColor: 'var(--surface-2)', padding: '2px', borderRadius: '8px' }}>
       {options.map((opt) => {
@@ -35,7 +36,7 @@ export function SegmentedControl<T extends string>({ label, value, options, onCh
               onChange={() => onChange(opt)} 
               style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
             />
-            {opt}
+            {formatOption ? formatOption(opt) : opt}
           </label>
         )
       })}

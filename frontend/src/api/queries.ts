@@ -17,7 +17,7 @@ export const getSymbols = (signal?: AbortSignal) =>
   getJson<SymbolsResponse>("/market-data/symbols", signal);
 
 export const getMarketData = (symbol: string, signal?: AbortSignal) =>
-  getJson<MarketResponse>(`/market-data/${symbol}?limit=500`, signal);
+  getJson<MarketResponse>(`/market-data/${symbol}?limit=2000`, signal);
 
 export const getFactors = (signal?: AbortSignal) =>
   getJson<FactorCatalogResponse>("/factors", signal);
@@ -28,7 +28,7 @@ export const getFactorValues = (
   signal?: AbortSignal,
 ) =>
   getJson<FactorResponse>(
-    `/factors/${encodeURIComponent(factorName)}?symbol=${encodeURIComponent(symbol)}&limit=500`,
+    `/factors/${encodeURIComponent(factorName)}?symbol=${encodeURIComponent(symbol)}&limit=2000`,
     signal,
   );
 

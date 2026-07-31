@@ -8,7 +8,7 @@ export interface MetricProps {
 }
 
 export const Metric: React.FC<MetricProps> = ({ label, value, tone = 'neutral', detail }) => {
-  let color = '#ffffff'
+  let color = 'var(--text-primary)'
   if (tone === 'positive') color = 'var(--positive)'
   if (tone === 'negative') color = 'var(--negative)'
   if (tone === 'warning') color = 'var(--warning)'

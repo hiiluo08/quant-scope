@@ -23,6 +23,11 @@ export function formatDate(value: string): string {
   return `${d}-${m}-${y}`
 }
 
+export function formatFactorName(name: string): string {
+  if (!name) return ''
+  return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
 export function metricTone(value: number | null | undefined): 'neutral' | 'positive' | 'negative' | 'muted' {
   if (value == null || !Number.isFinite(value)) return 'muted'
   if (value > 0) return 'positive'

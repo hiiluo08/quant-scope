@@ -6,12 +6,15 @@ import { DataTable, type Column } from '../components/DataTable'
 import { EquityChart } from '../components/charts/EquityChart'
 import { AsyncState } from '../components/AsyncState'
 import { getBacktests, getBacktest, getBacktestDaily, getModels, getModel, getPredictions, getLatestFactorValues } from '../api/queries'
-import { deriveStrategyHealth, extractTopSignals, deriveFactorLeaders, type CommandCenterInputs, type SignalRow, type FactorLeader } from './commandCenterTransforms'
+import { deriveStrategyHealth, extractTopSignals, deriveFactorLeaders, deriveFactorLaggards, type CommandCenterInputs, type SignalRow, type FactorLeader } from './commandCenterTransforms'
+import { SegmentedControl } from '../components/ui/SegmentedControl'
+import { formatFactorName } from '../lib/formatters'
 
 export const OverviewPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<CommandCenterInputs | null>(null)
+  const [activeFactor, setActiveFactor] = useState<'momentum_20d' | 'rsi_14' | 'volatility_20d'>('momentum_20d')
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -44,20 +47,18 @@ export const OverviewPage: React.FC = () => {
           predictionsPromise = getPredictions(championModelId, 'test', abortController.signal).then(res => res.data) as any
         }
 
-        const factorPromise = getLatestFactorValues('momentum_1m', abortController.signal)
-          .catch((factorError: unknown) => {
-            if (factorError instanceof DOMException && factorError.name === 'AbortError') {
-              throw factorError
-            }
-            return undefined
-          }) as any
+        const mom20 = getLatestFactorValues('momentum_20d', abortController.signal).catch(() => undefined) as any
+        const rsi14 = getLatestFactorValues('rsi_14', abortController.signal).catch(() => undefined) as any
+        const vol20 = getLatestFactorValues('volatility_20d', abortController.signal).catch(() => undefined) as any
 
-        const [backtest, daily, model, predictions, latestFactors] = await Promise.all([
+        const [backtest, daily, model, predictions, momData, rsiData, volData] = await Promise.all([
           backtestPromise,
           dailyPromise,
           modelPromise,
           predictionsPromise,
-          factorPromise
+          mom20,
+          rsi14,
+          vol20
         ])
 
         setData({
@@ -65,7 +66,11 @@ export const OverviewPage: React.FC = () => {
           daily,
           model,
           predictions,
-          latestFactors
+          factors: {
+            momentum_20d: momData,
+            rsi_14: rsiData,
+            volatility_20d: volData
+          }
         })
       } catch (err: any) {
         if (err.name !== 'AbortError') {
@@ -87,7 +92,7 @@ export const OverviewPage: React.FC = () => {
     <div className="page-enter" style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 className="page-title" style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.75rem' }}>Command Center</h1>
+          <h1 className="page-title" style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.75rem' }}>Home</h1>
           <p className="page-subtitle" style={{ margin: 0, color: 'var(--text-secondary)', marginTop: '4px' }}>Latest available research data & signals</p>
         </div>
         <StatusBadge 
@@ -107,7 +112,17 @@ export const OverviewPage: React.FC = () => {
 
           const health = deriveStrategyHealth(data.backtest)
           const topSignals = extractTopSignals(data.predictions)
-          const factorLeaders = deriveFactorLeaders(data.latestFactors)
+          
+          let factorLeaders: FactorLeader[] = []
+          let factorLaggards: FactorLeader[] = []
+          if (activeFactor === 'momentum_20d') {
+            factorLeaders = deriveFactorLeaders(data.factors?.momentum_20d)
+          } else if (activeFactor === 'rsi_14') {
+            factorLeaders = deriveFactorLeaders(data.factors?.rsi_14)
+            factorLaggards = deriveFactorLaggards(data.factors?.rsi_14)
+          } else {
+            factorLeaders = deriveFactorLeaders(data.factors?.volatility_20d)
+          }
 
           const signalColumns: Column<SignalRow>[] = [
             { key: 'symbol', header: 'Symbol', render: r => <span style={{ fontWeight: 600 }}>{r.symbol}</span>, sortValue: r => r.symbol },
@@ -145,14 +160,35 @@ export const OverviewPage: React.FC = () => {
                   />
                 </Panel>
 
-                {/* Factor Leaders */}
-                <Panel title="Factor Leaders (Momentum)">
-                  <DataTable
-                    caption="Top Momentum Stocks"
-                    columns={factorColumns}
-                    data={factorLeaders}
-                    getRowKey={r => r.symbol}
-                  />
+                {/* Factor Extremes */}
+                <Panel title={
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <span>Factor Extremes</span>
+                    <SegmentedControl 
+                      label="Factor" 
+                      value={activeFactor} 
+                      onChange={(val) => setActiveFactor(val as any)} 
+                      options={['momentum_20d', 'rsi_14', 'volatility_20d']}
+                      formatOption={formatFactorName}
+                    />
+                  </div>
+                }>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <DataTable
+                      caption={activeFactor === 'momentum_20d' ? 'Top Momentum (20d)' : activeFactor === 'rsi_14' ? 'Most Overbought (RSI > 70)' : 'Highest Volatility'}
+                      columns={factorColumns}
+                      data={factorLeaders}
+                      getRowKey={r => r.symbol}
+                    />
+                    {activeFactor === 'rsi_14' && factorLaggards.length > 0 && (
+                      <DataTable
+                        caption="Most Oversold (RSI < 30)"
+                        columns={factorColumns}
+                        data={factorLaggards}
+                        getRowKey={r => r.symbol}
+                      />
+                    )}
+                  </div>
                 </Panel>
               </div>
             </div>

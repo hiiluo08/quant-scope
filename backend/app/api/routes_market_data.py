@@ -24,7 +24,7 @@ def get_market_data(
     symbol: str,
     start_date: Optional[str] = Query(None, description="Start date YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="End date YYYY-MM-DD"),
-    limit: int = Query(100, ge=1, le=5000)
+    limit: int = Query(2000, ge=1, le=5000)
 ):
     df = load_data()
     symbol = symbol.upper()

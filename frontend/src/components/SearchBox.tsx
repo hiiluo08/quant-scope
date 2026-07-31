@@ -14,7 +14,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ symbols, selectedSymbol, o
 
   const filteredSymbols = symbols.filter((sym) =>
     sym.toLowerCase().includes(query.toLowerCase())
-  ).slice(0, 50); // Limit to 50 results to prevent lag
+  );
 
   useEffect(() => {
     setQuery(selectedSymbol);

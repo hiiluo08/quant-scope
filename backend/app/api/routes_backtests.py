@@ -26,6 +26,7 @@ def _records(frame: pd.DataFrame) -> list[dict[str, object]]:
 @router.get("")
 def get_backtests() -> dict[str, object]:
     backtests = list_backtests(root=Path(settings.backtests_dir))
+    backtests.sort(key=lambda x: x.get("end_date", ""), reverse=True)
     return {"backtests": backtests, "count": len(backtests)}
 
 @router.get("/{backtest_id}")
