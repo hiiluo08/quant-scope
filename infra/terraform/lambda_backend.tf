@@ -40,7 +40,6 @@ resource "aws_lambda_function" "backend_api" {
   environment {
     variables = {
       APP_ENV     = "production"
-      AWS_REGION  = var.aws_region
       BUCKET_NAME = aws_s3_bucket.data_lake.bucket
     }
   }
