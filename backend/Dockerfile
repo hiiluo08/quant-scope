@@ -1,9 +1,9 @@
 FROM public.ecr.aws/lambda/python:3.12
 
 # Install dependencies (libgomp1 is needed for LightGBM)
-RUN yum update -y && \
-    yum install -y libgomp && \
-    yum clean all
+RUN dnf update -y && \
+    dnf install -y libgomp && \
+    dnf clean all
 
 # Copy requirements and install
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
