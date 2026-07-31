@@ -8,10 +8,9 @@ QuantScope is an end-to-end quantitative trading research platform built for edu
 
 ## Demo and screenshots
 
-- **Live Dashboard:** [http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com](http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com)
-- **Live API Endpoint:** [http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health](http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health)
-- **Visual Evidence:** See [docs/screenshots/README.md](docs/screenshots/README.md) (To be finalized).
-- **Demo Script:** See [docs/final_demo_script.md](docs/final_demo_script.md) (To be finalized).
+- **Live Dashboard:** Deployed on AWS Amplify.
+- **Live API Endpoint:** Deployed via AWS API Gateway & Lambda.
+- **Visual Evidence:** See [docs/screenshots/README.md](docs/screenshots/README.md).
 
 ## Research flow
 
@@ -27,21 +26,25 @@ Market data → causal factors → rule-based backtest → leakage-controlled ML
 
 ## Architecture
 
-The system utilizes a hybrid local/cloud architecture:
-- Data is periodically ingested via AWS EventBridge and Lambda to a private S3 bucket.
-- The backend API runs as a Docker container on an Amazon EC2 instance.
-- The frontend is compiled as a static Vite site and hosted on a public S3 bucket.
-- See detailed architecture documentation in [docs/architecture.md](docs/architecture.md) and [docs/deployment_aws.md](docs/deployment_aws.md).
+The system utilizes a 100% Serverless architecture defined via Terraform:
+- The frontend is a React + Vite SPA hosted globally via AWS Amplify.
+- The backend API runs as a Docker container on AWS Lambda behind API Gateway.
+- Data pipelines and Machine Learning training run as scheduled containerized tasks on AWS ECS (Fargate).
+- Data and artifacts are stored in a private Amazon S3 Data Lake.
+- See detailed architecture documentation in [docs/deployment_aws.md](docs/deployment_aws.md).
 
 ## Technology and AWS services
 
 - **Core Tech:** Python 3.12, FastAPI, Pandas, LightGBM, React, Vite, TypeScript, Docker.
 - **Testing:** Pytest, Vitest.
-- **AWS Services Used:**
-  - **S3:** Private data lake & Public static frontend hosting.
-  - **EC2 (t3.micro):** FastAPI backend container host.
-  - **Lambda & EventBridge:** Scheduled serverless data ingestion.
-  - **IAM & CloudWatch:** Least-privilege roles, instance profiles, and 7-day log retention.
+- **AWS Services Used (Serverless):**
+  - **AWS Amplify:** Fully managed CI/CD and hosting for the Frontend.
+  - **AWS Lambda & API Gateway:** Serverless REST API serving inferences and data.
+  - **Amazon ECS (Fargate):** Heavy-lifting compute for ML Training and Backtesting.
+  - **Amazon EventBridge:** Scheduler triggering daily and weekly automated jobs.
+  - **Amazon S3:** Private Data Lake storing market data, factors, and ML models.
+  - **Amazon ECR:** Docker container registry for Backend and Jobs.
+  - **IAM & CloudWatch:** Least-privilege roles and centralized log aggregation.
 
 ## Local setup
 
@@ -67,8 +70,9 @@ All deployment claims and functionality are verified through reproducible script
 
 ## Deployment and cost controls
 
-- Cloud deployment includes an AWS Budget alert ($20 / $50 / $100).
-- Automatic teardown and cost control runbook available via `./scripts/stop_ec2.sh`.
+- Infrastructure is fully defined using Infrastructure as Code (Terraform) in `infra/terraform`.
+- 100% Serverless architecture ensures pay-as-you-go pricing (no idle EC2 instances).
+- Heavy jobs (ML) are scheduled to run briefly and automatically terminate via ECS Fargate.
 - Review AWS deployment details at [docs/deployment_aws.md](docs/deployment_aws.md).
 
 ## Research limitations

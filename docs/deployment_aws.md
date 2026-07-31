@@ -1,36 +1,46 @@
-# QuantScope — AWS Deployment Documentation & Runbook
+# QuantScope — AWS Deployment & Serverless Architecture
 
 ## 1. Overview & Topology Architecture
 
-- **Frontend**: Static website hosted on Public S3 Bucket (`quantscope-frontend-dev-942852434802-aps1`).
-- **Backend API**: FastAPI Docker container deployed on EC2 (`quantscope-ec2-demo`, `t3.micro`, Amazon Linux 2023).
-- **Data Storage**: Private S3 Bucket (`quantscope-data-dev-942852434802-ap-southeast-1-an`) for raw, processed, factor, and model artifact data. Block Public Access enabled.
-- **Scheduled Ingestion**: AWS Lambda (`quantscope-lambda-ingestion`, Python 3.12) triggered by EventBridge Schedule (`cron(0 22 ? * MON-FRI *)` UTC).
-- **Logging & Monitoring**: CloudWatch Logs with 7-day retention policy.
-- **Security & IAM**: Least privilege IAM roles (`quantscope-ec2-demo-role`, `quantscope-lambda-ingestion-role`). No static credentials stored on EC2 or Lambda.
+The entire infrastructure of QuantScope has been modernized and migrated to a **100% Serverless** architecture provisioned entirely via **Terraform** (`infra/terraform`).
+
+- **Frontend**: Single Page Application (React + Vite) hosted via **AWS Amplify**. Features global CDN edge delivery and automated deployments.
+- **Backend API**: FastAPI framework served by **AWS Lambda** via **Amazon API Gateway** using Mangum. Highly available and scales to zero.
+- **Machine Learning & Cron Jobs**: Heavy compute tasks (ML model training, complex backtesting, data processing) run on **Amazon ECS (Fargate)**. Scheduled automatically using **Amazon EventBridge**.
+- **Data Storage (Data Lake)**: Market data, factor values, and ML models are stored securely in a private **Amazon S3** bucket.
+- **Container Registry**: A unified Docker image serving both the Lambda API and ECS Jobs is stored in **Amazon ECR**.
+- **Logging & Monitoring**: Consolidated logs for Lambda and ECS are sent to **Amazon CloudWatch Logs** with a 7-day retention policy.
+- **Security & IAM**: Granular Least-Privilege IAM Roles ensure Lambda and ECS tasks only have access to specific S3 buckets. No static credentials are used.
 
 ## 2. Resource Inventory
 
-| Resource Name | Type | Region | Identity / Identifier |
+| Resource Name | Type | Region | Purpose |
 | :--- | :--- | :--- | :--- |
-| `quantscope-data-dev-942852434802-ap-southeast-1-an` | S3 Private Bucket | `ap-southeast-1` | Data & Artifact Storage |
-| `quantscope-frontend-dev-942852434802-aps1` | S3 Public Website | `ap-southeast-1` | Static Vite Build Hosting |
-| `quantscope-ec2-demo` | EC2 Instance | `ap-southeast-1` | `i-0f40c2c573e6a2e1d` (t3.micro) |
-| `quantscope-ec2-demo-role` | IAM Role / Instance Profile | Global | EC2 Read Access to S3 |
-| `quantscope-lambda-ingestion` | AWS Lambda Function | `ap-southeast-1` | Ingestion Function |
-| `quantscope-lambda-ingestion-role` | IAM Role | Global | Lambda Write Access to S3 |
-| `quantscope-daily-ingestion-schedule` | EventBridge Rule | `ap-southeast-1` | Scheduled Ingestion Trigger |
+| `quant-scope-data-*` | S3 Private Bucket | `ap-southeast-1` | Data Lake (Parquet data & Model artifacts) |
+| `quant-scope-amplify` | AWS Amplify | `ap-southeast-1` | Frontend Web Hosting (Global CDN) |
+| `quant-scope-api` | AWS Lambda | `ap-southeast-1` | FastAPI Backend Serverless Execution |
+| `quant-scope-gateway` | Amazon API Gateway | `ap-southeast-1` | HTTP API routing to Lambda |
+| `quant-scope-backend` | Amazon ECR | `ap-southeast-1` | Docker container registry |
+| `quant-scope-cluster` | Amazon ECS (Fargate) | `ap-southeast-1` | Heavy Compute Cluster for ML |
+| `daily_backtest_rule` | EventBridge Rule | `ap-southeast-1` | Triggers daily ECS Job (Data, Factors, Inference) |
+| `weekly_ml_rule` | EventBridge Rule | `ap-southeast-1` | Triggers weekly ECS Job (ML Training) |
 
 ## 3. Operations Runbook
 
-### Stop EC2 Instance (Cost Saving)
-To stop the EC2 instance after demo:
+### Deploying Infrastructure
+Navigate to the `infra/terraform` directory and execute:
 ```bash
-./scripts/stop_ec2.sh
+terraform init
+terraform apply -target=aws_ecr_repository.backend
+# Build and push your Docker image to ECR...
+terraform apply
 ```
 
-### Start EC2 Instance
-To start EC2 instance for demo:
-```bash
-aws ec2 start-instances --instance-ids i-0f40c2c573e6a2e1d --region ap-southeast-1
-```
+### Cost Control
+Since the architecture is 100% Serverless:
+- You pay nothing when the system is idle.
+- There are no EC2 instances to start or stop.
+- ECS Fargate tasks automatically terminate once the ML training or inference job finishes.
+
+### Accessing the Web Dashboard
+After running `terraform apply`, Terraform will output the `amplify_branch_url` which provides direct access to the live web dashboard.
