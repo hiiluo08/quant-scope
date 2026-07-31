@@ -17,9 +17,9 @@ resource "aws_iam_role" "lambda_backend_role" {
 }
 
 # 2. Attach policies to Lambda (CloudWatch logs, S3 access)
-resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+resource "aws_iam_role_policy_attachment" "lambda_vpc_access" {
   role       = aws_iam_role.lambda_backend_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_s3_read" {
@@ -43,6 +43,11 @@ resource "aws_lambda_function" "backend_api" {
       AWS_REGION  = var.aws_region
       BUCKET_NAME = aws_s3_bucket.data_lake.bucket
     }
+  }
+
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda_sg.id]
   }
 }
 

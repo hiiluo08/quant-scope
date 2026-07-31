@@ -55,9 +55,9 @@ resource "aws_cloudwatch_event_target" "daily_backtest_target" {
     launch_type         = "FARGATE"
     
     network_configuration {
-      subnets          = aws_subnet.public[*].id
+      subnets          = aws_subnet.private[*].id
       security_groups  = [aws_security_group.lambda_sg.id]
-      assign_public_ip = true
+      assign_public_ip = false
     }
   }
   
@@ -91,9 +91,9 @@ resource "aws_cloudwatch_event_target" "weekly_ml_target" {
     launch_type         = "FARGATE"
     
     network_configuration {
-      subnets          = aws_subnet.public[*].id
+      subnets          = aws_subnet.private[*].id
       security_groups  = [aws_security_group.lambda_sg.id]
-      assign_public_ip = true
+      assign_public_ip = false
     }
   }
   
