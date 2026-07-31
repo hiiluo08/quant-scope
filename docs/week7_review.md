@@ -31,8 +31,8 @@
 |---|---|---|---|---|
 | `quantscope-data-dev-942852434802-ap-southeast-1-an` | S3 | `ap-southeast-1` | Data Bucket | Block Public Access (100% Private) |
 | `quantscope-frontend-dev-942852434802-aps1` | S3 | `ap-southeast-1` | Website Bucket | Public Read Static Website Hosting |
-| `quantscope-ec2-demo` | Serverless (Lambda/ECS) | `ap-southeast-1` | `i-0f40c2c573e6a2e1d` (t3.micro) | Instance Profile Attached, Port 8000 / 22 |
-| `quantscope-ec2-demo-role` | IAM | Global | `arn:aws:iam::942852434802:role/quantscope-ec2-demo-role` | Read-only access to S3 Data Bucket |
+| `quantscope-api` | Serverless (Lambda/ECS) | `ap-southeast-1` | Lambda Function | API Gateway Integration |
+| `quantscope-api-role` | IAM | Global | `arn:aws:iam::942852434802:role/quantscope-api-role` | Read-only access to S3 Data Bucket |
 | `quantscope-lambda-ingestion` | Lambda | `ap-southeast-1` | Python 3.12, 512MB, 5min timeout | Write-only permitted prefixes |
 | `quantscope-lambda-ingestion-role` | IAM | Global | `arn:aws:iam::942852434802:role/quantscope-lambda-ingestion-role` | CloudWatch Logs + S3 Write |
 | `quantscope-daily-ingestion-schedule` | EventBridge | `ap-southeast-1` | `cron(0 22 ? * MON-FRI *)` UTC | Invokes Lambda Ingestion |

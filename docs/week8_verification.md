@@ -32,7 +32,7 @@
 - [x] Data bucket Block Public Access is enabled.
   - **Result:** Verified via `curl -I https://quantscope-data-dev-942852434802-ap-southeast-1-an.s3.ap-southeast-1.amazonaws.com/` -> `403 Forbidden`.
 - [x] Serverless (Lambda/ECS) has instance profile; no long-lived key is present in source/container.
-  - **Result:** Verified. `quantscope-ec2-demo-role` is attached.
+  - **Result:** Verified. `quantscope-api-role` is attached.
 - [x] SSH is not open to the world.
   - **Result:** Verified in Security Group `sg-0d4d4d8937276a8b6`.
 - [x] Screenshots/docs contain no secret/account-sensitive data.
