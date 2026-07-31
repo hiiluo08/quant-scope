@@ -1,0 +1,33 @@
+.git/
+.venv*/
+venv*/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Data and Models
+data/
+*.parquet
+*.csv
+*.json
+
+# Infrastructure
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+
+# Local config
+.env
+.DS_Store
