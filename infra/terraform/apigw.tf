@@ -20,6 +20,10 @@ resource "aws_apigatewayv2_integration" "backend" {
   integration_method = "POST" # Lambda AWS_PROXY always requires POST integration method
   
   payload_format_version = "2.0" # API Gateway HTTP APIs typically use 2.0 for Lambda
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # 4. Route
