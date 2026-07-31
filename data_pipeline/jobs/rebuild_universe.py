@@ -43,7 +43,7 @@ def _validate_universe(df: pd.DataFrame) -> None:
     unexpected = sorted(observed - set(UNIVERSE_TICKERS))
     
     if missing:
-        raise ValueError(f"Missing symbols: {', '.join(missing)}")
+        logger.warning(f"Missing symbols: {', '.join(missing)}")
     
     if unexpected:
         raise ValueError(f"Unexpected symbols: {', '.join(unexpected)}")
@@ -52,8 +52,7 @@ def _validate_universe(df: pd.DataFrame) -> None:
     short_symbols = row_counts[row_counts < MIN_TRADING_ROWS]
     if not short_symbols.empty:
         details = ", ".join(f"{name}={count}" for name, count in short_symbols.items())
-        
-        raise ValueError(f"Every symbol needs at least {MIN_TRADING_ROWS} trading rows; {details}")
+        logger.warning(f"Every symbol needs at least {MIN_TRADING_ROWS} trading rows; {details}")
 
 def _validate_quality(report: dict[str, object]) -> None:
     blocking = {

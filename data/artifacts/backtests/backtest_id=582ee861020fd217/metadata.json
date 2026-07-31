@@ -1,0 +1,58 @@
+{
+  "backtest_id": "582ee861020fd217",
+  "benchmarks": {
+    "equal_weight_buy_and_hold": {
+      "annualized_volatility": 0.10317280814990742,
+      "average_exposure": 1.0,
+      "average_turnover": 0.0,
+      "cagr": 0.09892869080643618,
+      "calmar_ratio": 1.5553984861103038,
+      "max_drawdown": -0.06360343776200672,
+      "sharpe_ratio": 0.9657584739688247,
+      "total_return": 0.06252105172435574,
+      "trading_days": 162,
+      "win_rate": 0.5061728395061729
+    },
+    "spy": {
+      "annualized_volatility": 0.13632366344156932,
+      "average_exposure": 1.0,
+      "average_turnover": 0.0,
+      "cagr": 0.12158945323091519,
+      "calmar_ratio": 1.3684849605412015,
+      "max_drawdown": -0.088849681755238,
+      "sharpe_ratio": 0.9096686671572545,
+      "total_return": 0.07655467035270136,
+      "trading_days": 162,
+      "win_rate": 0.5493827160493827
+    }
+  },
+  "champion_model_id": "5d1360263392ba52",
+  "end_date": "2026-06-23",
+  "engine_version": "v1",
+  "factor_versions": {
+    "momentum_20d": "v1",
+    "momentum_60d": "v1",
+    "rsi_14": "v1",
+    "sma_ratio_20_50": "v1",
+    "volatility_20d": "v1",
+    "volume_zscore_20d": "v1"
+  },
+  "initial_equity": 1.0,
+  "metrics": {
+    "annualized_volatility": 0.20046173807382459,
+    "average_exposure": 0.9938271604938271,
+    "average_turnover": 0.5148148148148148,
+    "cagr": 0.1906576804832263,
+    "calmar_ratio": 1.6023135725701427,
+    "max_drawdown": -0.11898899425622889,
+    "sharpe_ratio": 0.9701681144489975,
+    "total_return": 0.1187168036386288,
+    "trading_days": 162,
+    "win_rate": 0.5341614906832298
+  },
+  "selection": "lowest validation RMSE; rank IC only breaks an exact RMSE tie",
+  "slippage_bps": 5.0,
+  "start_date": "2025-10-29",
+  "strategy_name": "ml_top_5_rank_v1",
+  "transaction_cost_bps": 5.0
+}

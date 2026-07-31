@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
 from backend.app.api.routes_backtests import router as backtests_router
 from backend.app.api.routes_factors import router as factors_router
@@ -25,3 +26,6 @@ app.include_router(models_router, prefix="/api/v1")
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "quantscope-api"}
+
+# Handler cho AWS Lambda
+handler = Mangum(app)

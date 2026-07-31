@@ -5,7 +5,11 @@ import { AsyncState } from '../components/AsyncState'
 import { DataTable, type Column } from '../components/DataTable'
 import { LineSeriesChart } from '../components/charts/LineSeriesChart'
 import { ResearchNotice } from '../components/ResearchNotice'
+import { Panel } from '../components/ui/Panel'
+import { DetailsDrawer } from '../components/ui/DetailsDrawer'
+import { DataFreshness } from '../components/ui/DataFreshness'
 import type { FactorMetadata, FactorValue } from '../api/types'
+import { formatDate } from '../lib/formatters'
 
 const formatFactorValue = (value: number | null) =>
   value === null || !Number.isFinite(value) ? 'N/A' : value.toFixed(6)
@@ -63,74 +67,107 @@ export const FactorsPage: React.FC = () => {
   const warmupExcluded = seriesState.status === 'success'
     ? seriesState.data.data.length - chartRows.length
     : 0
+
   const latestColumns: Column<FactorValue>[] = [
-    { key: 'symbol', header: 'Symbol', render: (row) => row.symbol },
-    { key: 'factor_value', header: 'Current value', render: (row) => formatFactorValue(row.factor_value) },
+    { key: 'symbol', header: 'Symbol', render: (row) => <span style={{ fontWeight: 600 }}>{row.symbol}</span>, sortValue: (row) => row.symbol },
+    { key: 'factor_value', header: 'Current value', render: (row) => formatFactorValue(row.factor_value), align: 'end', sortValue: (row) => row.factor_value ?? -Infinity },
     { key: 'factor_version', header: 'Factor version', render: (row) => row.factor_version },
-    { key: 'date', header: 'As of', render: (row) => row.date },
-  ]
-  const seriesColumns: Column<FactorValue>[] = [
-    { key: 'date', header: 'Date', render: (row) => row.date },
-    { key: 'symbol', header: 'Symbol', render: (row) => row.symbol },
-    { key: 'factor_value', header: 'Factor value', render: (row) => formatFactorValue(row.factor_value) },
-    { key: 'factor_version', header: 'Factor version', render: (row) => row.factor_version },
-    { key: 'computed_at', header: 'Computed at', render: (row) => row.computed_at },
   ]
 
+  const seriesColumns: Column<FactorValue>[] = [
+    { key: 'date', header: 'Date', render: (row) => formatDate(row.date), sortValue: (row) => row.date },
+    { key: 'symbol', header: 'Symbol', render: (row) => row.symbol },
+    { key: 'factor_value', header: 'Factor value', render: (row) => formatFactorValue(row.factor_value), align: 'end' },
+    { key: 'factor_version', header: 'Factor version', render: (row) => row.factor_version },
+    { key: 'computed_at', header: 'Computed at', render: (row) => formatDate(row.computed_at) },
+  ]
+
+  const latestDate = latestRows.length > 0 ? latestRows[0].date : undefined
+
   return (
-    <div className="stack page-enter">
+    <div className="stack page-enter" style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
       <ResearchNotice message="Factors are persisted research features, not trading signals or investment advice." />
-      <section className="card">
-        <h1 className="card-title">Factors Explorer</h1>
-        <AsyncState state={catalogState} emptyMessage="Run the factor persistence job before using this page.">
+      
+      <Panel title="Factors Explorer">
+        <AsyncState state={catalogState} emptyMessage="Run the factor persistence job before using this page." variant="panel">
           {(catalog) => catalog.count === 0 ? (
             <div className="async-empty"><h2>No factor catalog available</h2><p>Run the factor pipeline, then retry.</p><button type="button" onClick={catalogState.retry}>Retry</button></div>
           ) : (
-            <div className="controls">
-              <div className="control-group">
-                <label htmlFor="factor-select" className="control-label">Factor</label>
-                <select id="factor-select" value={factorName} onChange={(event) => setFactorName(event.target.value)}>
-                  {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{factor.name}</option>)}
-                </select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '200px' }}>
+                  <label htmlFor="factor-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Factor</label>
+                  <select 
+                    id="factor-select" 
+                    value={factorName} 
+                    onChange={(event) => setFactorName(event.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
+                  >
+                    {catalog.factors.map((factor) => <option key={factor.name} value={factor.name}>{factor.name}</option>)}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '200px' }}>
+                  <label htmlFor="factor-symbol-select" style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Symbol</label>
+                  <select 
+                    id="factor-symbol-select" 
+                    value={symbol} 
+                    onChange={(event) => setSymbol(event.target.value)} 
+                    disabled={symbols.length === 0}
+                    style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-1)', color: 'var(--text-primary)' }}
+                  >
+                    {symbols.map((item) => <option key={item} value={item}>{item}</option>)}
+                  </select>
+                </div>
               </div>
-              <div className="control-group">
-                <label htmlFor="factor-symbol-select" className="control-label">Symbol</label>
-                <select id="factor-symbol-select" value={symbol} onChange={(event) => setSymbol(event.target.value)} disabled={symbols.length === 0}>
-                  {symbols.map((item) => <option key={item} value={item}>{item}</option>)}
-                </select>
-              </div>
+
+              {metadata && (
+                <DetailsDrawer title="Factor Metadata">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', fontSize: '0.875rem' }}>
+                    <div>
+                      <div style={{ color: 'var(--text-secondary)' }}>Factor version</div>
+                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{metadata.version}</div>
+                    </div>
+                    <div>
+                      <div style={{ color: 'var(--text-secondary)' }}>Warm-up periods</div>
+                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{metadata.warmup_periods}</div>
+                    </div>
+                    {metadata.parameters && (
+                      <div>
+                        <div style={{ color: 'var(--text-secondary)' }}>Parameters</div>
+                        <div style={{ fontWeight: 500, fontFamily: 'monospace', color: 'var(--text-primary)' }}>
+                          {Object.entries(metadata.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}
+                        </div>
+                      </div>
+                    )}
+                    <div>
+                      <div style={{ color: 'var(--text-secondary)' }}>Rows excluded (warm-up)</div>
+                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{warmupExcluded}</div>
+                    </div>
+                  </div>
+                </DetailsDrawer>
+              )}
             </div>
           )}
         </AsyncState>
-      </section>
+      </Panel>
 
-      {metadata && <section className="card" aria-label="Factor metadata">
-        <h2 className="card-section-title">Factor Metadata</h2>
-        <div className="kv-grid">
-          <span className="kv-key">Factor version</span>
-          <span className="kv-value">{metadata.version}</span>
-          <span className="kv-key">Warm-up periods</span>
-          <span className="kv-value">{metadata.warmup_periods}</span>
-          {metadata.parameters && (
-            <>
-              <span className="kv-key">Parameters</span>
-              <span className="kv-value"><code>{Object.entries(metadata.parameters).map(([k,v]) => `${k}: ${String(v)}`).join(', ')}</code></span>
-            </>
-          )}
-          <span className="kv-key">Rows excluded (warm-up)</span>
-          <span className="kv-value">{warmupExcluded}</span>
-        </div>
-      </section>}
-
-      {factorName && symbol && <AsyncState state={seriesState}>
-        {(response) => <>
-          <LineSeriesChart title={`${response.factor_name} — ${symbol} factor value`} data={chartRows} dataKey="factor_value" />
-          <DataTable caption={`Time-series values for ${response.factor_name} — ${symbol}`} columns={seriesColumns} data={response.data} getRowKey={(row) => `${row.date}-${row.symbol}`} />
-        </>}
+      {factorName && symbol && <AsyncState state={seriesState} variant="panel">
+        {(response) => (
+          <Panel title={`${response.factor_name} — ${symbol} factor value`}>
+            <div style={{ height: '300px', marginBottom: '24px' }}>
+              <LineSeriesChart title="" data={chartRows} dataKey="factor_value" />
+            </div>
+            <DataTable caption={`Time-series values for ${response.factor_name} — ${symbol}`} columns={seriesColumns} data={response.data} getRowKey={(row) => `${row.date}-${row.symbol}`} pageSize={10} initialSortKey="date" initialSortAsc={false} />
+          </Panel>
+        )}
       </AsyncState>}
 
-      {factorName && <AsyncState state={latestState}>
-        {(response) => <DataTable caption={`Latest values for ${response.factor_name}`} columns={latestColumns} data={latestRows} getRowKey={(row) => row.symbol} />}
+      {factorName && <AsyncState state={latestState} variant="panel">
+        {(response) => (
+          <Panel title={`Latest values for ${response.factor_name}`} action={latestDate && <DataFreshness timestamp={latestDate} />}>
+            <DataTable caption="" columns={latestColumns} data={latestRows} getRowKey={(row) => row.symbol} pageSize={10} />
+          </Panel>
+        )}
       </AsyncState>}
     </div>
   )

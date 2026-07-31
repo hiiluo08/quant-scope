@@ -23,21 +23,29 @@ class RSIFactor(Factor):
         }
     
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
         
-        def rsi(prices: pd.Series) -> pd.Series:
-            delta = prices.diff()
-            gains = delta.clip(lower=0)
-            losses = (-delta.clip(upper=0))
-            average_gain = gains.ewm(alpha=1 / self.period, adjust=False, min_periods=self.period).mean()
-            average_loss = losses.ewm(alpha=1 / self.period, adjust=False, min_periods=self.period).mean()
-            rs = average_gain / average_loss
-            rsi_values = 100 - (100 / (1 + rs))
-            return rsi_values.mask((average_loss == 0) & (average_gain > 0), 100.0).mask(
-                (average_gain == 0) & (average_loss > 0), 0.0
-            ).mask((average_gain == 0) & (average_loss == 0), np.nan)
+        # RSI in Polars
+        res = pldf.with_columns(
+            delta=pl.col("adjusted_close").diff().over("symbol")
+        ).with_columns(
+            gain=pl.when(pl.col("delta") > 0).then(pl.col("delta")).otherwise(0),
+            loss=pl.when(pl.col("delta") < 0).then(-pl.col("delta")).otherwise(0)
+        ).with_columns(
+            avg_gain=pl.col("gain").ewm_mean(alpha=1/self.period, min_periods=self.period, adjust=False).over("symbol"),
+            avg_loss=pl.col("loss").ewm_mean(alpha=1/self.period, min_periods=self.period, adjust=False).over("symbol")
+        ).with_columns(
+            rs=pl.col("avg_gain") / pl.col("avg_loss")
+        ).with_columns(
+            rsi=pl.when(pl.col("avg_loss") == 0).then(
+                pl.when(pl.col("avg_gain") > 0).then(100.0).otherwise(None)
+            ).otherwise(100 - (100 / (1 + pl.col("rs"))))
+        )
             
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(rsi)
+        res_series = res.get_column("rsi").to_pandas()
+        return res_series
     
 class SMARatioFactor(Factor):
     def __init__(self, short_window: int = 20, long_window: int = 50) -> None:
@@ -58,11 +66,15 @@ class SMARatioFactor(Factor):
         }
     
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
         
-        def ratio(prices: pd.Series) -> pd.Series:
-            short_sma = prices.rolling(self.short_window, min_periods=self.short_window).mean()
-            long_sma = prices.rolling(self.long_window, min_periods=self.long_window).mean()
-            return short_sma / long_sma - 1
+        res = pldf.with_columns(
+            short_sma=pl.col("adjusted_close").rolling_mean(self.short_window).over("symbol"),
+            long_sma=pl.col("adjusted_close").rolling_mean(self.long_window).over("symbol")
+        ).with_columns(
+            ratio=(pl.col("short_sma") / pl.col("long_sma")) - 1
+        )
         
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(ratio)
+        return res.get_column("ratio").to_pandas()

@@ -34,8 +34,9 @@ describe('MLLabPage', () => {
   it('shows manifest, split controls, metrics and research-only prediction table', async () => {
     render(<MLLabPage />)
     await waitFor(() => expect(screen.getByLabelText('Model')).toHaveValue('model-demo-001'))
-    expect(screen.getByLabelText('Prediction split')).toHaveValue('test')
-    expect(await screen.findByRole('heading', { level: 2, name: /model-demo-001/i })).toBeInTheDocument()
+    const splitGroup = screen.getByRole('group', { name: 'Prediction split' })
+    expect(within(splitGroup).getByLabelText('test')).toBeChecked()
+    expect(await screen.findByText(/xgboost · model-demo-001/i)).toBeInTheDocument()
     expect((await screen.findAllByText(/momentum_20d/i)).length).toBeGreaterThan(0)
     expect((await screen.findAllByText('—')).length).toBeGreaterThan(0)
     expect((await screen.findAllByText('SPY')).length).toBeGreaterThan(0)
@@ -60,8 +61,8 @@ describe('MLLabPage', () => {
 
   it('requests selected model and split with limit', async () => {
     render(<MLLabPage />)
-    await screen.findByLabelText('Prediction split')
-    fireEvent.change(screen.getByLabelText('Prediction split'), { target: { value: 'validation' } })
+    const splitGroup = await screen.findByRole('group', { name: 'Prediction split' })
+    fireEvent.click(within(splitGroup).getByLabelText('validation'))
     await waitFor(() => expect(getPredictions).toHaveBeenCalledWith('model-demo-001', 'validation', expect.any(AbortSignal)))
   })
 

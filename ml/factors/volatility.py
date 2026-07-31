@@ -23,7 +23,11 @@ class VolatilityFactor(Factor):
         }
     
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
-        return prepared.groupby("symbol", sort=False)["return_1d"].transform(
-            lambda returns: returns.rolling(self.window, min_periods=self.window).std(ddof=1)
+        pldf = pl.from_pandas(prepared[["symbol", "return_1d"]])
+        
+        res = pldf.with_columns(
+            volatility=pl.col("return_1d").rolling_std(self.window, ddof=1).over("symbol")
         )
+        return res.get_column("volatility").to_pandas()

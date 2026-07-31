@@ -23,16 +23,20 @@ class MACDFactor(Factor):
         }
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
 
-        def _macd(prices: pd.Series) -> pd.Series:
-            ema_fast = prices.ewm(span=self.fast, adjust=False, min_periods=self.fast).mean()
-            ema_slow = prices.ewm(span=self.slow, adjust=False, min_periods=self.slow).mean()
-            return ema_fast - ema_slow
+        res = pldf.with_columns(
+            ema_fast=pl.col("adjusted_close").ewm_mean(span=self.fast, min_periods=self.fast, adjust=False).over("symbol"),
+            ema_slow=pl.col("adjusted_close").ewm_mean(span=self.slow, min_periods=self.slow, adjust=False).over("symbol")
+        ).with_columns(
+            macd_line=pl.col("ema_fast") - pl.col("ema_slow")
+        )
 
-        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_macd)
-        res.name = self.name
-        return res
+        res_series = res.get_column("macd_line").to_pandas()
+        res_series.name = self.name
+        return res_series
 
 
 class MACDSignalFactor(Factor):
@@ -54,15 +58,20 @@ class MACDSignalFactor(Factor):
         }
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
 
-        def _signal(prices: pd.Series) -> pd.Series:
-            ema_fast = prices.ewm(span=self.fast, adjust=False, min_periods=self.fast).mean()
-            ema_slow = prices.ewm(span=self.slow, adjust=False, min_periods=self.slow).mean()
-            macd_line = ema_fast - ema_slow
-            return macd_line.ewm(span=self.signal, adjust=False, min_periods=self.signal).mean()
+        res = pldf.with_columns(
+            ema_fast=pl.col("adjusted_close").ewm_mean(span=self.fast, min_periods=self.fast, adjust=False).over("symbol"),
+            ema_slow=pl.col("adjusted_close").ewm_mean(span=self.slow, min_periods=self.slow, adjust=False).over("symbol")
+        ).with_columns(
+            macd_line=pl.col("ema_fast") - pl.col("ema_slow")
+        ).with_columns(
+            macd_signal=pl.col("macd_line").ewm_mean(span=self.signal, min_periods=self.signal, adjust=False).over("symbol")
+        )
 
-        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_signal)
-        res.name = self.name
-        return res
+        res_series = res.get_column("macd_signal").to_pandas()
+        res_series.name = self.name
+        return res_series
 

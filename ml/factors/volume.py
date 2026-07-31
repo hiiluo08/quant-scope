@@ -23,11 +23,17 @@ class VolumeZScoreFactor(Factor):
         }
         
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "volume"]])
         
-        def zscore(volume: pd.Series) -> pd.Series:
-            mean = volume.rolling(self.window, min_periods=self.window).mean()
-            std = volume.rolling(self.window, min_periods=self.window).std(ddof=1)
-            return ((volume - mean) / std).replace([np.inf, -np.inf], np.nan)
+        res = pldf.with_columns(
+            volume_mean=pl.col("volume").rolling_mean(self.window).over("symbol"),
+            volume_std=pl.col("volume").rolling_std(self.window, ddof=1).over("symbol")
+        ).with_columns(
+            volume_zscore=(pl.col("volume") - pl.col("volume_mean")) / pl.col("volume_std")
+        )
         
-        return prepared.groupby("symbol", sort=False)["volume"].transform(zscore)
+        # Replace inf with nan in pandas since polars doesn't have a direct inf replace
+        res_series = res.get_column("volume_zscore").to_pandas()
+        return res_series.replace([np.inf, -np.inf], np.nan)

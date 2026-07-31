@@ -11,24 +11,15 @@ resource "aws_apigatewayv2_api" "backend" {
   }
 }
 
-# 2. VPC Link to ALB
-resource "aws_apigatewayv2_vpc_link" "backend" {
-  name               = "${var.project_name}-vpc-link"
-  security_group_ids = [aws_security_group.alb_sg.id]
-  subnet_ids         = aws_subnet.private[*].id # VPC link requires private subnets for internal ALBs, or public for public ALBs.
-}
-
-# 3. API Gateway Integration with ALB
+# 2. API Gateway Integration with Lambda
 resource "aws_apigatewayv2_integration" "backend" {
   api_id           = aws_apigatewayv2_api.backend.id
-  integration_type = "HTTP_PROXY"
-  integration_uri  = aws_lb_listener.http.arn
-
-  integration_method = "ANY"
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.backend.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.backend_api.invoke_arn
   
-  payload_format_version = "1.0"
+  integration_method = "POST" # Lambda AWS_PROXY always requires POST integration method
+  
+  payload_format_version = "2.0" # API Gateway HTTP APIs typically use 2.0 for Lambda
 }
 
 # 4. Route

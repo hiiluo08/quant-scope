@@ -23,7 +23,20 @@ def _upload_parquet(df: pd.DataFrame, bucket: str, key: str) -> None:
     s3.put_object(Bucket=bucket, Key=key, Body=buf.getvalue())
 
 
+def _read_parquet_s3(bucket: str, key: str) -> pd.DataFrame:
+    try:
+        response = s3.get_object(Bucket=bucket, Key=key)
+        buf = io.BytesIO(response["Body"].read())
+        return pd.read_parquet(buf)
+    except s3.exceptions.NoSuchKey:
+        return pd.DataFrame()
+    except Exception as e:
+        logger.error(f"Error reading {key} from S3: {e}")
+        return pd.DataFrame()
+
 def lambda_handler(event: dict, context: object) -> dict:
+    from data_pipeline.processing.normalize import normalize_ohlcv
+    
     results = []
 
     for record in event["Records"]:
@@ -40,15 +53,27 @@ def lambda_handler(event: dict, context: object) -> dict:
             raw_df = download_multiple_tickers(symbols, start_date, end_date)
             clean, quarantined, report = run_quality_gate(raw_df)
 
-            # Write clean data
-            if not clean.empty:
-                key = f"raw/daily/{end_date}/chunk_{chunk_id:03d}.parquet"
-                _upload_parquet(clean, bucket, key)
-
             # Write quarantined data
             if not quarantined.empty:
-                q_key = f"quarantine/{end_date}/chunk_{chunk_id:03d}.parquet"
+                q_key = f"data/quarantine/{end_date}/chunk_{chunk_id:03d}.parquet"
                 _upload_parquet(quarantined, bucket, q_key)
+
+            # Process clean data by symbol
+            if not clean.empty:
+                normalized = normalize_ohlcv(clean)
+                
+                for symbol, group in normalized.groupby("symbol"):
+                    s3_key = f"data/processed/symbol={symbol}/data.parquet"
+                    existing_df = _read_parquet_s3(bucket, s3_key)
+                    
+                    if not existing_df.empty:
+                        combined = pd.concat([existing_df, group], ignore_index=True)
+                        combined = combined.drop_duplicates(subset=["date"], keep="last")
+                        combined = combined.sort_values(by="date").reset_index(drop=True)
+                    else:
+                        combined = group.sort_values(by="date").reset_index(drop=True)
+                        
+                    _upload_parquet(combined, bucket, s3_key)
 
             results.append({
                 "chunk_id": chunk_id,

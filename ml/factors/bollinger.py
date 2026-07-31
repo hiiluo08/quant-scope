@@ -23,16 +23,18 @@ class BollingerWidthFactor(Factor):
         }
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
 
-        def _bb_width(prices: pd.Series) -> pd.Series:
-            sma = prices.rolling(self.window, min_periods=self.window).mean()
-            std = prices.rolling(self.window, min_periods=self.window).std(ddof=1)
-            upper = sma + self.num_std * std
-            lower = sma - self.num_std * std
-            return (upper - lower) / sma
-
-        res = prepared.groupby("symbol", sort=False)["adjusted_close"].transform(_bb_width)
-        res.name = self.name
-        return res
+        res = pldf.with_columns(
+            sma=pl.col("adjusted_close").rolling_mean(self.window).over("symbol"),
+            std=pl.col("adjusted_close").rolling_std(self.window, ddof=1).over("symbol")
+        ).with_columns(
+            bb_width=(2 * self.num_std * pl.col("std")) / pl.col("sma")
+        )
+        
+        res_series = res.get_column("bb_width").to_pandas()
+        res_series.name = self.name
+        return res_series
 

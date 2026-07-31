@@ -21,10 +21,15 @@ class MomentumFactor(Factor):
         }
     
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(
-            lambda prices: prices / prices.shift(self.window) - 1
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
+        
+        # (price / price.shift(window)) - 1
+        res = pldf.with_columns(
+            momentum=(pl.col("adjusted_close") / pl.col("adjusted_close").shift(self.window).over("symbol")) - 1
         )
+        return res.get_column("momentum").to_pandas()
 
 class LaggedReturnFactor(Factor):
     """Lagged close price return: close_t / close_{t-lag} - 1."""
@@ -40,7 +45,11 @@ class LaggedReturnFactor(Factor):
         return {**super().metadata(), "parameters": {"lag": self.lag}}
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        import polars as pl
         prepared = prepare_factor_input(df)
-        return prepared.groupby("symbol", sort=False)["adjusted_close"].transform(
-            lambda p: p / p.shift(self.lag) - 1
+        pldf = pl.from_pandas(prepared[["symbol", "adjusted_close"]])
+        
+        res = pldf.with_columns(
+            lag_return=(pl.col("adjusted_close") / pl.col("adjusted_close").shift(self.lag).over("symbol")) - 1
         )
+        return res.get_column("lag_return").to_pandas()
