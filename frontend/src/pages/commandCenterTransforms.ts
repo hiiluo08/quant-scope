@@ -3,7 +3,6 @@ import type {
   DailyBacktestRow,
   ModelManifest,
   PredictionRow,
-  FactorMetadata,
   FactorResponse
 } from '../api/types'
 

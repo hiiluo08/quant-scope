@@ -8,8 +8,7 @@ import {
   BrainCircuit, 
   Moon, 
   Sun,
-  RefreshCw,
-  Search
+  RefreshCw
 } from 'lucide-react'
 
 interface AppShellProps {

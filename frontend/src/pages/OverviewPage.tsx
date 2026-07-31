@@ -161,9 +161,9 @@ export const OverviewPage: React.FC = () => {
                 </Panel>
 
                 {/* Factor Extremes */}
-                <Panel title={
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <span>Factor Extremes</span>
+                <Panel 
+                  title="Factor Extremes"
+                  action={
                     <SegmentedControl 
                       label="Factor" 
                       value={activeFactor} 
@@ -171,8 +171,8 @@ export const OverviewPage: React.FC = () => {
                       options={['momentum_20d', 'rsi_14', 'volatility_20d']}
                       formatOption={formatFactorName}
                     />
-                  </div>
-                }>
+                  }
+                >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <DataTable
                       caption={activeFactor === 'momentum_20d' ? 'Top Momentum (20d)' : activeFactor === 'rsi_14' ? 'Most Overbought (RSI > 70)' : 'Highest Volatility'}

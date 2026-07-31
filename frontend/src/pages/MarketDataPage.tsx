@@ -101,9 +101,8 @@ export const MarketDataPage: React.FC = () => {
 						const latestRow = filteredRows[filteredRows.length - 1]
 						const prevRow = filteredRows[filteredRows.length - 2]
 						
-						let priceTrend: 'up' | 'down' | 'neutral' = 'neutral'
 						if (latestRow && prevRow) {
-							priceTrend = latestRow.close > prevRow.close ? 'up' : latestRow.close < prevRow.close ? 'down' : 'neutral'
+							// Intentionally left empty or can add other logic
 						}
 
 						return (

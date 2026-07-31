@@ -20,7 +20,7 @@ export interface DataTableProps<T> {
     initialSortAsc?: boolean
 }
 
-export function DataTable<T>({ caption, columns, data, getRowKey, pageSize, filterLabel, filterText, initialSortKey, initialSortAsc = true }: DataTableProps<T>) {
+export function DataTable<T>({ caption, columns, data, getRowKey, pageSize, filterLabel, filterText, initialSortKey, initialSortAsc = false }: DataTableProps<T>) {
     const [sortKey, setSortKey] = useState<string | null>(initialSortKey || null)
     const [sortAsc, setSortAsc] = useState(initialSortAsc)
     const [filter, setFilter] = useState('')
