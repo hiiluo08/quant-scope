@@ -55,5 +55,5 @@
 ## Week 7 Handoff Inputs
 
 - **Frontend Static Build:** `frontend/dist/` ready for S3 / CloudFront deployment.
-- **Backend API Server:** FastAPI application ready for Docker containerization on EC2.
+- **Backend API Server:** FastAPI application ready for Docker containerization on Serverless (Lambda/ECS).
 - **Environment Contract:** Public variable `VITE_API_BASE_URL` configurable at build time.

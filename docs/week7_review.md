@@ -17,9 +17,9 @@
 | Frontend Build | `cd frontend && npm run test && npm run build` | `0` | Passed (25/25 tests passed) |
 | S3 Frontend Website | `curl -I http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com` | `200 OK` | Verified |
 | S3 Private Data Security | `curl -I https://quantscope-data-dev-942852434802-ap-southeast-1-an.s3.ap-southeast-1.amazonaws.com/processed/` | `403 Forbidden` | Secured |
-| EC2 API Health Endpoint | `curl http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health` | `200 OK` | Verified |
-| EC2 Factors API | `curl http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/api/v1/factors` | `200 OK` | Verified |
-| EC2 Models API | `curl http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/api/v1/models` | `200 OK` | Verified |
+| Serverless (Lambda/ECS) API Health Endpoint | `curl https://api.quantscope.com/health` | `200 OK` | Verified |
+| Serverless (Lambda/ECS) Factors API | `curl https://api.quantscope.com/api/v1/factors` | `200 OK` | Verified |
+| Serverless (Lambda/ECS) Models API | `curl https://api.quantscope.com/api/v1/models` | `200 OK` | Verified |
 | Lambda Execution Test | `aws lambda invoke --function-name quantscope-lambda-ingestion /tmp/out.json` | `0` | Status 200 (`success`) |
 | CloudWatch Log Retention | `aws logs describe-log-groups --log-group-name-prefix /aws/lambda/` | `0` | Retention 7 days |
 
@@ -31,7 +31,7 @@
 |---|---|---|---|---|
 | `quantscope-data-dev-942852434802-ap-southeast-1-an` | S3 | `ap-southeast-1` | Data Bucket | Block Public Access (100% Private) |
 | `quantscope-frontend-dev-942852434802-aps1` | S3 | `ap-southeast-1` | Website Bucket | Public Read Static Website Hosting |
-| `quantscope-ec2-demo` | EC2 | `ap-southeast-1` | `i-0f40c2c573e6a2e1d` (t3.micro) | Instance Profile Attached, Port 8000 / 22 |
+| `quantscope-ec2-demo` | Serverless (Lambda/ECS) | `ap-southeast-1` | `i-0f40c2c573e6a2e1d` (t3.micro) | Instance Profile Attached, Port 8000 / 22 |
 | `quantscope-ec2-demo-role` | IAM | Global | `arn:aws:iam::942852434802:role/quantscope-ec2-demo-role` | Read-only access to S3 Data Bucket |
 | `quantscope-lambda-ingestion` | Lambda | `ap-southeast-1` | Python 3.12, 512MB, 5min timeout | Write-only permitted prefixes |
 | `quantscope-lambda-ingestion-role` | IAM | Global | `arn:aws:iam::942852434802:role/quantscope-lambda-ingestion-role` | CloudWatch Logs + S3 Write |
@@ -45,13 +45,13 @@
 2. **Data Bucket Security**: Block Public Access enabled on `quantscope-data-dev-942852434802-ap-southeast-1-an`. Anonymous HTTP requests return 403 Forbidden.
 3. **CORS Restriction**: FastAPI CORS restricted to exact frontend S3 website URL and localhost development ports.
 4. **CloudWatch Retention**: Log retention set to 7 days for Lambda log group.
-5. **Cost Guardrails**: AWS Budget alert threshold created ($20, $50, $100). Runbook script `scripts/stop_ec2.sh` created to stop EC2 compute charges post-demo.
+5. **Cost Guardrails**: AWS Budget alert threshold created ($20, $50, $100). Runbook script `(Removed - 100% Serverless)` created to stop Serverless (Lambda/ECS) compute charges post-demo.
 
 ---
 
 ## Week 8 Handoff Inputs
 
 - **Live Deployed S3 Frontend URL:** `http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com`
-- **Live Deployed EC2 API Base URL:** `http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/api/v1`
+- **Live Deployed Serverless (Lambda/ECS) API Base URL:** `https://api.quantscope.com/api/v1`
 - **Architecture Documentation:** `docs/deployment_aws.md`
-- **EC2 Stop Runbook:** `scripts/stop_ec2.sh`
+- **Serverless (Lambda/ECS) Stop Runbook:** `(Removed - 100% Serverless)`

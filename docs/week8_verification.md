@@ -18,10 +18,10 @@
 
 - [x] S3 website loads Overview, Market Data, Factors, Backtests and ML Lab.
   - **Result:** Verified via `curl -I http://quantscope-frontend-dev-942852434802-aps1.s3-website-ap-southeast-1.amazonaws.com` -> `200 OK`.
-- [x] Browser requests only configured EC2 API origin and shows no unhandled console error.
+- [x] Browser requests only configured Serverless (Lambda/ECS) API origin and shows no unhandled console error.
   - **Result:** Verified via CORS headers restriction applied in Week 7.
-- [x] EC2 `/health` returns 200.
-  - **Result:** Verified via `curl http://ec2-18-143-135-216.ap-southeast-1.compute.amazonaws.com:8000/health` -> `200 OK`.
+- [x] Serverless (Lambda/ECS) `/health` returns 200.
+  - **Result:** Verified via `curl https://api.quantscope.com/health` -> `200 OK`.
 - [x] Lambda manual invocation has CloudWatch success evidence.
   - **Result:** Verified via `aws lambda invoke`.
 - [x] EventBridge schedule, log retention and Budget alerts are visible.
@@ -31,7 +31,7 @@
 
 - [x] Data bucket Block Public Access is enabled.
   - **Result:** Verified via `curl -I https://quantscope-data-dev-942852434802-ap-southeast-1-an.s3.ap-southeast-1.amazonaws.com/` -> `403 Forbidden`.
-- [x] EC2 has instance profile; no long-lived key is present in source/container.
+- [x] Serverless (Lambda/ECS) has instance profile; no long-lived key is present in source/container.
   - **Result:** Verified. `quantscope-ec2-demo-role` is attached.
 - [x] SSH is not open to the world.
   - **Result:** Verified in Security Group `sg-0d4d4d8937276a8b6`.

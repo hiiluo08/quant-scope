@@ -139,7 +139,7 @@ Dự án sử dụng tối thiểu 3 dịch vụ AWS:
 
 - **Amazon S3:** lưu Historical Data và Model Artifacts
 - **AWS Lambda:** Scheduled Data Collection
-- **Amazon EC2:** chạy FastAPI và Dashboard
+- **AWS Lambda & ECS Fargate:** chạy FastAPI và Dashboard
 
 ### Phạm vi dữ liệu MVP
 
@@ -194,7 +194,7 @@ Người dùng có thể đi trọn flow:
 
 ### AWS success
 
-- Sử dụng tối thiểu: S3, Lambda, EC2
+- Sử dụng tối thiểu: S3, Lambda, Serverless (Lambda/ECS)
 - Tổng chi phí dưới 20 USD trong thời gian làm đồ án
 
 ### Portfolio success
@@ -211,7 +211,7 @@ GitHub có đầy đủ:
 
 ## Scope Statement ngắn gọn
 
-QuantScope là nền tảng nghiên cứu giao dịch định lượng sử dụng Machine Learning, cho phép thu thập dữ liệu thị trường, xây dựng factor, tạo chiến lược giao dịch, thực hiện backtesting và phân tích hiệu suất thông qua dashboard trực quan. Hệ thống được triển khai trên AWS bằng các dịch vụ chi phí thấp (S3, Lambda, EC2) và hướng tới người học Quant, AI và Algorithmic Trading. Trong phạm vi 8 tuần, dự án tập trung vào nghiên cứu và đánh giá chiến lược, không bao gồm giao dịch thực tế, tối ưu danh mục đầu tư hay các mô hình Deep Learning phức tạp.
+QuantScope là nền tảng nghiên cứu giao dịch định lượng sử dụng Machine Learning, cho phép thu thập dữ liệu thị trường, xây dựng factor, tạo chiến lược giao dịch, thực hiện backtesting và phân tích hiệu suất thông qua dashboard trực quan. Hệ thống được triển khai trên AWS bằng các dịch vụ chi phí thấp (S3, Lambda, Serverless (Lambda/ECS)) và hướng tới người học Quant, AI và Algorithmic Trading. Trong phạm vi 8 tuần, dự án tập trung vào nghiên cứu và đánh giá chiến lược, không bao gồm giao dịch thực tế, tối ưu danh mục đầu tư hay các mô hình Deep Learning phức tạp.
 
 ---
 

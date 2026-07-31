@@ -10,7 +10,7 @@
 | 4 | Tạo causal backtest engine, metrics, costs, rule-based strategies và artifacts. | Built causal backtest engine, metrics, costs, rule-based strategies and artifacts. | backtest report, tests |
 | 5 | Tạo forward labels, factor dataset, embargoed split, XGBoost/LightGBM và ML ranking. | Built forward labels, factor dataset, embargoed split, XGBoost/LightGBM baselines and ML ranking. | ML report, manifests |
 | 6 | Tạo React dashboard cho data, factors, backtests, ML và resilient API states. | Built React dashboard for data, factors, backtests, ML and resilient API states. | dashboard demo/build |
-| 7 | Deploy AWS S3/EC2/Lambda/EventBridge/CloudWatch/Budgets. | Deployed AWS S3/EC2/Lambda/EventBridge/CloudWatch/Budgets. | URLs, logs, screenshots |
+| 7 | Deploy AWS S3/Serverless (Lambda/ECS)/Lambda/EventBridge/CloudWatch/Budgets. | Deployed AWS S3/Serverless (Lambda/ECS)/Lambda/EventBridge/CloudWatch/Budgets. | URLs, logs, screenshots |
 | 8 | Hoàn thiện portfolio, report, E2E checks và demo. | Polished portfolio, reports, E2E checks and demo. | final report/checklist |
 | 9 | **PLACEHOLDER: việc thực tế** | **PLACEHOLDER: actual work** | date, commit, screenshot |
 | 10 | **PLACEHOLDER: việc thực tế** | **PLACEHOLDER: actual work** | date, commit, screenshot |

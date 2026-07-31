@@ -16,7 +16,7 @@
 
 | FCAJ yêu cầu | QuantScope 8 tuần | Việc cần làm sau Week 8 |
 |---|---|---|
-| ≥3 AWS services | S3, EC2, Lambda; EventBridge/CloudWatch/IAM hỗ trợ | Deploy thật, lưu URL/log/screenshot/evidence |
+| ≥3 AWS services | S3, Serverless (Lambda/ECS), Lambda; EventBridge/CloudWatch/IAM hỗ trợ | Deploy thật, lưu URL/log/screenshot/evidence |
 | Workshop song ngữ VI/EN | Docs hiện chủ yếu tiếng Việt/English lẫn nhau | Chuyển workshop content sang Hugo `vi` + `en` cùng cấu trúc |
 | Worklog Week 1–12 | Có plan Week 1–8 | Xác minh actual output Week 1–8; ghi Week 9–12 thực tế |
 | 3 blog posts | Chưa có | Hoàn thiện/publish 3 drafts và lưu permalink/screenshot |
@@ -33,7 +33,7 @@
    ```bash
    pytest -q
    cd frontend && npm run test && npm run build
-   curl --fail http://<EC2_PUBLIC_DNS>:8000/health
+   curl --fail http://<Serverless (Lambda/ECS)_PUBLIC_DNS>:8000/health
    ```
 3. Chụp screenshots: S3 frontend, API health, Dashboard, Lambda logs, EventBridge, Budget, IAM role policy (redact account ID/key), private data bucket settings.
 4. Ghi exact resources: region, public frontend URL, API URL, Lambda function name, scheduled rule, log group, cost alert. Không ghi secret/access key.
@@ -81,7 +81,7 @@ Introduction
 │   ├── Architecture
 │   ├── Step 1: IAM and least privilege
 │   ├── Step 2: Private data bucket and static frontend bucket
-│   ├── Step 3: EC2 Docker FastAPI
+│   ├── Step 3: Serverless (Lambda/ECS) Docker FastAPI
 │   ├── Step 4: Lambda scheduled ingestion
 │   ├── Step 5: EventBridge, CloudWatch and Budget
 │   ├── Test and validation

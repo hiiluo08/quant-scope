@@ -39,7 +39,7 @@ terraform apply
 ### Cost Control
 Since the architecture is 100% Serverless:
 - You pay nothing when the system is idle.
-- There are no EC2 instances to start or stop.
+- There are no Serverless (Lambda/ECS) instances to start or stop.
 - ECS Fargate tasks automatically terminate once the ML training or inference job finishes.
 
 ### Accessing the Web Dashboard

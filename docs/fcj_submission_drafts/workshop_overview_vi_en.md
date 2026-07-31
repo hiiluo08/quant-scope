@@ -12,13 +12,13 @@ Người học Quant thường có notebook rời rạc, thiếu pipeline tái l
 
 ### Mục tiêu
 - Tạo research pipeline có thể tái lập trên universe US stocks/ETFs cố định.
-- Dùng ít nhất ba AWS services: Amazon S3, Amazon EC2 và AWS Lambda.
+- Dùng ít nhất ba AWS services: Amazon S3, AWS Lambda & ECS Fargate và AWS Lambda.
 - Có dashboard đọc artifact đã persist thay vì chạy compute qua browser.
 - Có logging, scheduling, IAM least privilege, cost control và cleanup procedure.
 
 ### Kiến trúc AWS
 - **S3 private data bucket:** raw/processed data, factor values, backtest/model artifacts.
-- **EC2 + Docker + FastAPI:** read-only API cho dashboard; EC2 instance profile chỉ đọc prefixes cần thiết.
+- **Serverless (Lambda/ECS) + Docker + FastAPI:** read-only API cho dashboard; Serverless (Lambda/ECS) instance profile chỉ đọc prefixes cần thiết.
 - **S3 static website bucket:** host React/Vite dashboard; không chứa credentials.
 - **Lambda + EventBridge:** ingestion batch theo schedule; Lambda execution role chỉ ghi data prefixes cần thiết.
 - **CloudWatch + AWS Budgets:** log, retention và cost alerts.
@@ -36,13 +36,13 @@ Quant learners often work with disconnected notebooks, non-reproducible pipeline
 
 ### Objectives
 - Build a reproducible research pipeline for a fixed US stock/ETF universe.
-- Use at least three AWS services: Amazon S3, Amazon EC2, and AWS Lambda.
+- Use at least three AWS services: Amazon S3, AWS Lambda & ECS Fargate, and AWS Lambda.
 - Serve persisted research artifacts through a dashboard instead of browser-triggered computation.
 - Demonstrate logging, scheduling, least-privilege IAM, cost controls, and cleanup.
 
 ### AWS architecture
 - **Private S3 data bucket:** raw/processed data, factor values, backtest/model artifacts.
-- **EC2 + Docker + FastAPI:** read-only dashboard API; the instance profile reads only required prefixes.
+- **Serverless (Lambda/ECS) + Docker + FastAPI:** read-only dashboard API; the instance profile reads only required prefixes.
 - **Static-website S3 bucket:** React/Vite dashboard hosting with no credentials.
 - **Lambda + EventBridge:** scheduled batch ingestion; its execution role writes only required data prefixes.
 - **CloudWatch + AWS Budgets:** logs, retention and cost alerts.
