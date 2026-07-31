@@ -19,4 +19,10 @@ python -m data_pipeline.jobs.run_backtests
 # Lưu ý: Việc lấy model ML để predict daily signal hiện đang ghép chung trong run_ml_pipeline.
 # Để tối ưu, bạn có thể tạo thêm file run_ml_inference.py chỉ để load mô hình đã train ra dự đoán.
 # Còn hiện tại script này hoàn thành cập nhật Data, Factors và Rule-based Backtests hàng ngày.
+
+# 3. Chạy ML Inference dựa trên mô hình (champion model) gần nhất để có ML Signals hằng ngày
+echo "[Daily Job] Running ML Inference..."
+python -m data_pipeline.jobs.run_ml_inference
+
 echo "[Daily Job] Done!"
+

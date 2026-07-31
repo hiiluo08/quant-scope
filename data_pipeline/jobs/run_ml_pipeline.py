@@ -15,7 +15,7 @@ from ml.features.labels import build_forward_return_labels
 from ml.strategies.ml_ranker import MLTopKRankStrategy
 from ml.training.evaluate import select_champion
 from ml.training.split import split_dataset
-from ml.training.storage import MODELS_DIR, save_model_artifact
+from ml.training.storage import MODELS_DIR, save_model_artifact, save_champion_id
 from ml.training.train import train_baseline_models
 
 def _split_dates(split: object) -> dict[str, str]:
@@ -84,7 +84,8 @@ def run_ml_pipeline(market_data: pd.DataFrame, factors_root: Path = FACTORS_DIR,
     }
     
     backtest_path = save_backtest_result(daily, backtest_metadata, root=backtests_root)
-    return {"models": model_paths, "champion": champion, "backtest": backtest_path}
+    save_champion_id(model_ids[champion], root=models_root)
+    return {"models": model_paths, "champion": model_ids[champion], "backtest": backtest_path}
 
 def main() -> None:
     market = pd.read_parquet(settings.processed_file)

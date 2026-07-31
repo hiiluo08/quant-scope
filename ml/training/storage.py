@@ -60,3 +60,28 @@ def load_predictions(model_id: str, split: str, root: Path = MODELS_DIR) -> pd.D
         raise FileNotFoundError(f"Stored predictions not found: {model_id}/{split})")
     
     return pd.read_parquet(path)
+
+def save_champion_id(model_id: str, root: Path = MODELS_DIR) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "champion.txt").write_text(model_id, encoding="utf-8")
+
+def load_champion_id(root: Path = MODELS_DIR) -> str:
+    path = root / "champion.txt"
+    if not path.exists():
+        raise FileNotFoundError("Champion model not set")
+    return path.read_text(encoding="utf-8").strip()
+
+def load_model_artifact(model_id: str, manifest: dict[str, object], root: Path = MODELS_DIR) -> object:
+    destination = model_path(model_id, root)
+    family = manifest.get("family")
+    filename = manifest.get("model_file")
+    
+    if family == "xgboost":
+        model = xgb.XGBRegressor()
+        model.load_model(destination / filename)
+        return model
+    elif family == "lightgbm":
+        model = lgb.Booster(model_file=str(destination / filename))
+        return model
+    else:
+        raise ValueError(f"Unknown model family: {family}")
