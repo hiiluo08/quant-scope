@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ${LAMBDA_TASK_ROOT}/backend
 COPY data_pipeline ${LAMBDA_TASK_ROOT}/data_pipeline
 COPY ml ${LAMBDA_TASK_ROOT}/ml
+COPY scripts ${LAMBDA_TASK_ROOT}/scripts
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD ["backend.app.main.handler"]
