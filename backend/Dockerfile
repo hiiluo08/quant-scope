@@ -6,7 +6,7 @@ RUN dnf update -y && \
     dnf clean all
 
 # Copy requirements and install
-COPY requirements.txt ${LAMBDA_TASK_ROOT}
+COPY backend/requirements.txt ${LAMBDA_TASK_ROOT}/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
