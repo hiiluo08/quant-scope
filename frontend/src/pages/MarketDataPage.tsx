@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
 import { getSymbols, getMarketData } from '../api/queries'
 import { AsyncState } from '../components/AsyncState'
+import { ResearchNotice } from '../components/ResearchNotice'
 import { LineSeriesChart } from '../components/charts/LineSeriesChart'
 import { CandlestickChart } from '../components/charts/CandlestickChart'
 import { DataTable, type Column } from '../components/DataTable'
 import { SearchBox } from '../components/SearchBox'
-import { Panel } from '../components/ui/Panel'
-import { DataFreshness } from '../components/ui/DataFreshness'
-import { Metric } from '../components/ui/Metric'
 import type { MarketRow } from '../api/types'
-import { formatDate } from '../lib/formatters'
 
 export const MarketDataPage: React.FC = () => {
 	const formatVolume = (val?: number) => {
@@ -21,10 +17,7 @@ export const MarketDataPage: React.FC = () => {
 		if (val >= 1e3) return (val / 1e3).toFixed(2) + 'K';
 		return val.toFixed(0);
 	}
-	const [searchParams, setSearchParams] = useSearchParams()
-	const urlSymbol = searchParams.get('symbol')
-	
-	const [selectedSymbol, setSelectedSymbol] = useState<string>(urlSymbol || '')
+	const [selectedSymbol, setSelectedSymbol] = useState<string>('')
 	const [timeRange, setTimeRange] = useState<'1M' | '3M' | '6M' | '1Y' | 'ALL'>('ALL')
 	const symbolsState = useApi('symbols', getSymbols)
 
@@ -39,25 +32,19 @@ export const MarketDataPage: React.FC = () => {
 		}
 	}, [symbolsState, selectedSymbol])
 
-	useEffect(() => {
-		if (selectedSymbol && selectedSymbol !== urlSymbol) {
-			setSearchParams({ symbol: selectedSymbol }, { replace: true })
-		}
-	}, [selectedSymbol, urlSymbol, setSearchParams])
-
 	const marketDataState = useApi(
 		selectedSymbol ? `market-data-${selectedSymbol}` : '',
 		(signal) => (selectedSymbol ? getMarketData(selectedSymbol, signal) : Promise.reject('No symbol selected'))
 	)
 
 	const columns: Column<MarketRow>[] = [
-		{ key: 'date', header: 'Date', render: (r) => formatDate(r.date), sortValue: (r) => r.date },
-		{ key: 'open', header: 'Open', render: (r) => r.open.toFixed(2), align: 'end' },
-		{ key: 'high', header: 'High', render: (r) => r.high.toFixed(2), align: 'end' },
-		{ key: 'low', header: 'Low', render: (r) => r.low.toFixed(2), align: 'end' },
-		{ key: 'close', header: 'Close', render: (r) => r.close.toFixed(2), align: 'end' },
-		{ key: 'adj_close', header: 'Adj Close', render: (r) => r.adjusted_close.toFixed(2), align: 'end'},
-		{ key: 'volume', header: 'Volume', render: (r) => r.volume.toLocaleString(), align: 'end' },
+		{ key: 'date', header: 'Date', render: (r) => r.date },
+		{ key: 'open', header: 'Open', render: (r) => r.open.toFixed(2) },
+		{ key: 'high', header: 'High', render: (r) => r.high.toFixed(2) },
+		{ key: 'low', header: 'Low', render: (r) => r.low.toFixed(2) },
+		{ key: 'close', header: 'Close', render: (r) => r.close.toFixed(2) },
+		{ key: 'adj_close', header: 'Adj Close', render: (r) => r.adjusted_close.toFixed(2)},
+		{ key: 'volume', header: 'Volume', render: (r) => r.volume.toLocaleString() },
 	]
 
 	const filterDataByTimeRange = (data: MarketRow[]) => {
@@ -74,11 +61,13 @@ export const MarketDataPage: React.FC = () => {
 	}
 
 	return (
-		<div className="page-enter" style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
-			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+		<div className="stack page-enter">
+			<ResearchNotice message="Market Data Explorer: Displays daily normalized OHLCV data. Past prices are not indicative of future returns." />
+
+			<div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
 				<div>
-					<h1 className="page-title" style={{ margin: 0, fontSize: '1.75rem', color: 'var(--text-primary)' }}>Market Data</h1>
-					<p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>Search and analyze over 500 symbols</p>
+					<h1 className="card-title" style={{ margin: 0, fontSize: '24px' }}>Market Data Explorer</h1>
+					<p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '4px' }}>Search and analyze over 500 symbols</p>
 				</div>
 				<AsyncState state={symbolsState}>
 					{(symbolsData) => (
@@ -92,92 +81,73 @@ export const MarketDataPage: React.FC = () => {
 			</div>
 
 			{selectedSymbol && (
-				<AsyncState state={marketDataState} variant="panel">
+				<AsyncState state={marketDataState}>
 					{(marketData) => {
 						const allRows = marketData.data || []
 						const filteredRows = filterDataByTimeRange(allRows)
-						const tableRows = [...filteredRows].slice(-100)
-						
-						const latestRow = filteredRows[filteredRows.length - 1]
-						const prevRow = filteredRows[filteredRows.length - 2]
-						
-						let priceTrend: 'up' | 'down' | 'neutral' = 'neutral'
-						if (latestRow && prevRow) {
-							priceTrend = latestRow.close > prevRow.close ? 'up' : latestRow.close < prevRow.close ? 'down' : 'neutral'
-						}
+						const tableRows = [...filteredRows].slice(-100).reverse()
 
 						return (
-							<div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-								<Panel>
-									<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-										<div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-											<Metric 
-												label="Latest Close" 
-												value={latestRow ? `$${latestRow.close.toFixed(2)}` : '-'} 
-												tone="neutral" 
-											/>
-											<Metric 
-												label="Latest Volume" 
-												value={latestRow ? formatVolume(latestRow.volume) : '-'} 
-											/>
-											<Metric 
-												label="30-Day Avg Volume" 
-												value={formatVolume(filteredRows.slice(-30).reduce((a, b) => a + b.volume, 0) / Math.min(30, filteredRows.length || 1))} 
-											/>
-										</div>
-										{latestRow && <DataFreshness timestamp={latestRow.date} />}
+							<>
+								<div className="kpi-grid">
+									<div className="kpi-card">
+										<div className="kpi-label">Latest Close</div>
+										<div className="kpi-value">${filteredRows[filteredRows.length - 1]?.close.toFixed(2)}</div>
 									</div>
+									<div className="kpi-card">
+										<div className="kpi-label">Latest Volume</div>
+										<div className="kpi-value">{formatVolume(filteredRows[filteredRows.length - 1]?.volume)}</div>
+									</div>
+									<div className="kpi-card">
+										<div className="kpi-label">30-Day Avg Volume</div>
+										<div className="kpi-value">{formatVolume(filteredRows.slice(-30).reduce((a, b) => a + b.volume, 0) / Math.min(30, filteredRows.length))}</div>
+									</div>
+								</div>
 
-									<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-										{['1M', '3M', '6M', '1Y', 'ALL'].map(range => (
-											<button 
-												key={range}
-												onClick={() => setTimeRange(range as any)}
-												style={{
-													padding: '4px 12px',
-													background: timeRange === range ? 'var(--surface-2)' : 'transparent',
-													color: timeRange === range ? 'var(--text-primary)' : 'var(--text-secondary)',
-													border: `1px solid ${timeRange === range ? 'var(--border-strong)' : 'var(--border-subtle)'}`,
-													borderRadius: '4px',
-													cursor: 'pointer',
-													fontWeight: 500,
-													fontSize: '0.875rem',
-													transition: 'all var(--transition-fast)'
-												}}
-											>
-												{range}
-											</button>
-										))}
-									</div>
+								<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+									{['1M', '3M', '6M', '1Y', 'ALL'].map(range => (
+										<button 
+											key={range}
+											onClick={() => setTimeRange(range as any)}
+											style={{
+												padding: '6px 16px',
+												background: timeRange === range ? 'var(--accent-primary)' : 'var(--bg-surface)',
+												color: timeRange === range ? 'var(--accent-primary-text)' : 'var(--text-primary)',
+												border: `1px solid ${timeRange === range ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+												borderRadius: 'var(--radius-full)',
+												cursor: 'pointer',
+												fontWeight: 500,
+												fontSize: '0.875rem',
+												transition: 'all var(--transition-fast)'
+											}}
+										>
+											{range}
+										</button>
+									))}
+								</div>
 
-									<div style={{ height: '400px', marginBottom: '24px' }}>
-										<CandlestickChart
-											title={`${marketData.symbol} Price`}
-											data={filteredRows}
-										/>
-									</div>
-									<div style={{ height: '240px' }}>
-										<LineSeriesChart
-											title={`${marketData.symbol} Volume`}
-											data={filteredRows}
-											dataKey="volume"
-											color="var(--accent)"
-											type="bar"
-										/>
-									</div>
-								</Panel>
+								<CandlestickChart
+									title={`${marketData.symbol} — OHLC Price`}
+									data={filteredRows}
+								/>
 
-								<Panel title={`Recent sessions for ${marketData.symbol}`}>
+								<LineSeriesChart
+									title={`${marketData.symbol} — Trading Volume`}
+									data={filteredRows}
+									dataKey="volume"
+									color="var(--data-blue)"
+									type="bar"
+								/>
+
+								<div className="card">
 									<DataTable
-										caption="Daily OHLCV"
-										columns={columns}
-										data={tableRows}
-										getRowKey={(r) => r.date}
-										initialSortKey="date"
-										initialSortAsc={false}
+									caption={`Recent sessions for ${marketData.symbol}`}
+									columns={columns}
+									data={tableRows}
+									getRowKey={(r) => r.date}
 									/>
-								</Panel>
-							</div>
+								</div>
+							</>
 						)
 					}}
 				</AsyncState>

@@ -9,25 +9,19 @@ import {
   Moon, 
   Sun,
   RefreshCw,
-  Search
+  Database
 } from 'lucide-react'
 
 interface AppShellProps {
   children: React.ReactNode
 }
 
-const navigation = [
-  { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
-  { to: '/market-data', label: 'Markets', icon: BarChart2 },
-  { to: '/factors', label: 'Factors', icon: Layers },
-  { to: '/backtests', label: 'Strategies', icon: LineChart },
-  { to: '/ml', label: 'ML Signals', icon: BrainCircuit },
-]
-
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
+    // If we were to actually toggle CSS we would do it here. 
+    // Right now styles.css uses prefers-color-scheme, but we can force it via data-theme.
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
   }, [isDark])
 
@@ -35,92 +29,61 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     <div className="app-shell">
       {/* Sidebar */}
       <aside className="app-sidebar">
-        <div className="app-brand" style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
-          <div style={{ background: 'var(--accent)', color: '#fff', padding: '6px', borderRadius: '8px', display: 'flex' }}>
+        <div className="app-brand">
+          <div style={{ background: 'var(--accent-primary)', color: 'var(--accent-primary-text)', padding: '6px', borderRadius: '8px' }}>
             <LineChart size={20} />
           </div>
-          <span className="nav-label">QuantScope</span>
+          QuantScope
         </div>
 
-        <nav aria-label="Main Navigation" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {navigation.map((item) => (
-            <NavLink 
-              key={item.to} 
-              to={item.to} 
-              end={item.end}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              style={({ isActive }) => ({
-                display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px',
-                borderRadius: '8px',
-                backgroundColor: isActive ? 'var(--surface-2)' : 'transparent',
-                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontWeight: 500
-              })}
-            >
-              <item.icon size={18} /> <span className="nav-label">{item.label}</span>
-            </NavLink>
-          ))}
-          <button 
-            disabled 
-            aria-disabled="true"
-            className="nav-link"
-            style={{
-              display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 12px',
-              borderRadius: '8px',
-              backgroundColor: 'transparent',
-              color: 'var(--text-secondary)',
-              fontWeight: 500,
-              border: 'none',
-              cursor: 'not-allowed',
-              opacity: 0.6,
-              textAlign: 'left'
-            }}
-          >
-            <Layers size={18} /> <span className="nav-label">Watchlist — Coming soon</span>
-          </button>
-        </nav>
-      </aside>
-
-      <nav className="app-bottom-nav" aria-label="Bottom Navigation">
-        {navigation.map((item) => (
-          <NavLink 
-            key={item.to} 
-            to={item.to} 
-            end={item.end}
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            style={({ isActive }) => ({
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px',
-              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-              fontWeight: 500,
-              fontSize: '0.75rem'
-            })}
-          >
-            <item.icon size={20} /> <span>{item.label}</span>
+        <nav aria-label="Main Navigation" style={{ flex: 1 }}>
+          <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            <LayoutDashboard size={18} /> Overview
           </NavLink>
-        ))}
-      </nav>
+          <NavLink to="/market-data" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            <BarChart2 size={18} /> Market Data
+          </NavLink>
+          <NavLink to="/factors" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            <Layers size={18} /> Factors
+          </NavLink>
+          <NavLink to="/backtests" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            <LineChart size={18} /> Backtests
+          </NavLink>
+          <NavLink to="/ml" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            <BrainCircuit size={18} /> ML Lab
+          </NavLink>
+        </nav>
+        
+        {/* Sidebar Footer */}
+        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-default)', paddingTop: '16px' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--data-green)' }}></div>
+            System Online
+          </div>
+        </div>
+      </aside>
 
       {/* Main Content */}
       <main className="app-main">
         {/* Header */}
-        <header className="top-bar">
+        <header className="app-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button aria-label="Search ticker or command" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', background: 'var(--surface-2)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-              <Search size={16} /> Search
-            </button>
-            <div className="status-badge">Research workspace</div>
+            <h2 style={{ fontSize: '1rem', margin: 0, fontWeight: 500 }}>Global Alpha Project</h2>
+            <div className="badge"><Database size={12} style={{ marginRight: '4px' }} /> 500 Symbols</div>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button 
-              style={{ padding: '6px 8px', border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              className="btn btn-outline" 
+              style={{ padding: '6px 8px', borderColor: 'transparent' }}
               onClick={() => window.location.reload()}
               title="Refresh Data"
             >
               <RefreshCw size={18} />
             </button>
             <button 
-              style={{ padding: '6px 8px', border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              className="btn btn-outline" 
+              style={{ padding: '6px 8px', borderColor: 'transparent' }}
               onClick={() => setIsDark(!isDark)}
               title="Toggle Theme"
             >
